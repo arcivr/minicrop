@@ -4,12 +4,19 @@
     <meta charset="utf-8">
     <title>Minicrop</title>
 
-    <script src="./src/minicrop.js" charset="utf-8"></script>
+    <script src="./sparkline.js" charset="utf-8"></script>
     <style>
     #minicrop {
+      position: relative;
       overflow: hidden;
       width: 750px;
       height: 750px;
+    }
+
+    #minicrop .image {
+      position: absolute;
+      left: 0;
+      top: 0;
     }
     </style>
   </head>
@@ -18,9 +25,9 @@
       <img class="image" src="./tests/fixtures/image.jpg">
     </div>
 
-
-    <script>
-      minicrop('minicrop')
+    <script type="module">
+      import Minicrop from './src/minicrop.js'
+      let cropper = new Minicrop('minicrop')
     </script>
   </body>
 </html>
