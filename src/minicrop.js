@@ -70,7 +70,7 @@ class Minicrop {
         this.start.y = pointer['clientY'] - this.offset.y
 
 
-        this.offset = Constrain.move(cropper, null, this.offset)
+        this.offset = Constrain.move(cropper, element, this.offset)
 
 
                 console.log("before", this.offset.y, cropper.style.top)
@@ -96,7 +96,7 @@ class Minicrop {
 
 // console.log(this.offset.x, this.offset.y)
 
-        this.offset = Constrain.move(cropper, null, this.offset)
+        this.offset = Constrain.move(cropper, element, this.offset)
 
         cropper.style.top  = `${ this.offset.y }px`
         cropper.style.left = `${ this.offset.x }px`
@@ -114,7 +114,7 @@ class Minicrop {
 
         console.log("end", this.offset.y, cropper.style.top)
 
-        this.offset = Constrain.move(cropper, null, this.offset)
+        this.offset = Constrain.move(cropper, element, this.offset)
 
         cropper.style.top  = `${ this.offset.y }px`
         cropper.style.left = `${ this.offset.x }px`

@@ -6,14 +6,14 @@ describe("move", () => {
   const image = {
     offsetTop: 0,
     offsetLeft: 0,
-    height: 1000,
-    width: 2000,
+    offsetHeight: 1000,
+    offsetWidth: 2000,
     style: {}
   }
 
   const canvas = {
-    width: 100,
-    height: 100
+    offsetWidth: 100,
+    offsetHeight: 100
   }
 
   describe("top", () => {
@@ -70,5 +70,44 @@ describe("move", () => {
       expect(move(image, canvas, { x: -2000 }))
         .toEqual({ x: -1900 })
     })
+  })
+})
+
+describe("imageState", () => {
+  const { imageState } = Constrain.default
+
+  test("portrait", () => {
+    let state = imageState({ offsetHeight: 100, offsetWidth: 10 }, {})
+    expect(state.portrait).toEqual(true)
+  })
+
+  test("not portrait", () => {
+    let state = imageState({ offsetHeight: 10, offsetWidth: 100 }, {})
+    expect(state.portrait).toEqual(false)
+  })
+
+  test("not padded", () => {
+    let state = imageState({ offsetHeight: 10, offsetWidth: 10 }, { offsetHeight: 1, offsetWidth: 1})
+    expect(state.padded).toEqual(false)
+  })
+
+  test("padded height", () => {
+    let state = imageState({ offsetHeight: 10, offsetWidth: 10 }, { offsetHeight: 100, offsetWidth: 1})
+    expect(state.padded).toEqual(true)
+  })
+
+  test("padded width", () => {
+    let state = imageState({ offsetHeight: 100, offsetWidth: 10 }, { offsetHeight: 1, offsetWidth: 100})
+    expect(state.padded).toEqual(true)
+  })
+
+  test("not fitted", () => {
+    let state = imageState({ offsetHeight: 10, offsetWidth: 10 }, { offsetHeight: 1, offsetWidth: 1})
+    expect(state.fitted).toEqual(false)
+  })
+
+  test("fitted", () => {
+    let state = imageState({ offsetHeight: 10, offsetWidth: 10 }, { offsetHeight: 10, offsetWidth: 100})
+    expect(state.fitted).toEqual(true)
   })
 })

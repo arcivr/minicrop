@@ -1,59 +1,65 @@
+const imageState = (image, canvas) => {
+  let portrait = image.offsetHeight > image.offsetWidth
+
+  // TODO: handle this
+  // if (category == "Phone Cases") {
+  //   portrait = this.rotated
+  // }
+
+  var longSide = 'offsetWidth'
+  var shortSide = 'offsetHeight'
+
+  if (portrait) {
+    longSide = 'offsetHeight'
+    shortSide = 'offsetWidth'
+  }
+
+  return {
+    portrait,
+    padded: image[shortSide] <= canvas[shortSide],
+    fitted: image[longSide] <= canvas[longSide] + 5
+  }
+}
+
 const move = (image, canvas, movement) => {
-  let cropBox = canvas || {
-    width: 750,
-    height: 750
-  }
-
-  let hit = {
-    top: image.offsetTop >= 0,
-    bottom: image.offsetTop + image.height <= cropBox.height,
-    left: image.offsetLeft >= 0,
-    right: image.offsetLeft + image.width <= cropBox.width
-  }
-
   // Restrict top
-  // if (hit.top) {
-  // if (hit.top && movement.y > 0) {
   if (movement.y > 0) {
     movement.y = 0
   }
 
   // Restrict bottom
-  // if (hit.bottom) {
-    let bottom = cropBox.height - image.height
-
-    if (movement.y < bottom) {
-      movement.y = bottom
-    }
-  // }
+  let bottom = canvas.offsetHeight - image.offsetHeight
+  if (movement.y < bottom) {
+    movement.y = bottom
+  }
 
   // Restrict left
-  // if (hit.left && movement.x > 0) {
   if (movement.x > 0) {
     movement.x = 0
   }
 
   // Restrict right
-  // if (hit.right) {
-    let right = cropBox.width - image.width
-
-    if (movement.x < right) {
-      movement.x = right
-    }
-  // }
+  let right = canvas.offsetWidth - image.offsetWidth
+  if (movement.x < right) {
+    movement.x = right
+  }
 
   // Don't allow dragging photo sides into cropbox, centering short side
-  // if (this.padded) {
-  //   if (portrait) {
-  //     cropUpdate.left = 0 + (cropBox.width - image.width) / 2
-  //   } else {
-  //     cropUpdate.top = 0 + (cropBox.height - image.height) / 2
-  //   }
-  // }
+  let state = imageState(image, canvas)
+  if (state.padded) {
+    if (state.portrait) {
+      // Set left to half of margin
+      movement.x = 0 + (canvas.offsetWidth - image.offsetWidth) / 2
+    } else {
+      // Set top to half of margin
+      movement.y = 0 + (canvas.offsetHeight - image.offsetHeight) / 2
+    }
+  }
 
   return movement
 }
 
 export default {
-  move
+  move,
+  imageState
 }
