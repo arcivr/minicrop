@@ -1,0 +1,12 @@
+.minicrop {
+  display: block;
+  overflow: hidden;
+  position: relative;
+  // overflow: scroll;
+
+  .image {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}

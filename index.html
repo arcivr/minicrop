@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>Minicrop</title>
 
-    <script src="./sparkline.js" charset="utf-8"></script>
     <style>
     h3 {
       margin: 30px 0 0;
@@ -32,30 +31,27 @@
       height: 400px;
     }
 
-
-    .minicrop {
-      display: block;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .minicrop .image {
-      position: absolute;
-      left: 0;
-      top: 0;
+    .default {
+      width: 750px;
+      height: 600px;
     }
     </style>
+
+    <link rel="stylesheet" href="minicrop.scss">
   </head>
   <body>
     <h1>Test Cases</h1>
+    <div class="minicrop test-background default">
+      <img class="image" src="./tests/fixtures/landscape.jpg" height="600" alt="">
+    </div>
 
     <h3>Zoomed</h3>
     <p>
       Cannot drag past edges to show <span class="test-background"></span> background.
     </p>
 
-    <div id="minicrop" class="minicrop test-background all-directions">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="600">
+    <div class="minicrop test-background all-directions">
+      <img class="image" src="./tests/fixtures/landscape.jpg" height="600" alt="">
     </div>
 
     <h3>Centered vertically in canvas.</h3>
@@ -63,8 +59,8 @@
       Cannot drag past left/right edges to show <span class="test-background"></span> background.
     </p>
 
-    <div id="minicrop" class="minicrop test-background padded">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="350">
+    <div class="minicrop test-background padded">
+      <img class="image" src="./tests/fixtures/landscape.jpg" height="350" alt="">
     </div>
 
     <h3>Centered horizontally in canvas.</h3>
@@ -72,8 +68,8 @@
       Cannot drag past top/bottom edges to show <span class="test-background"></span> background.
     </p>
 
-    <div id="minicrop" class="minicrop test-background padded">
-      <img class="image" src="./tests/fixtures/portrait.jpg" width="350">
+    <div class="minicrop test-background padded">
+      <img class="image" src="./tests/fixtures/portrait.jpg" width="350" alt="">
     </div>
 
     <script type="module">

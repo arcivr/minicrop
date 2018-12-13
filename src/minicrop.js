@@ -15,7 +15,6 @@ import {
 } from './constants.js'
 
 class Minicrop {
-
   constructor(element) {
     if (!element) {
       throw new Error('The first argument is required and must be an <img> or <canvas> element.');
@@ -25,7 +24,7 @@ class Minicrop {
     // - Build our HTML
     // - Handle zooming
     // - return crop info
-
+this.name = "I MEAN REALLY"
     this.element = element
     this.cropper = element.getElementsByClassName('image')[0]
 

@@ -1,0 +1,21 @@
+rules:
+  force-element-nesting:
+    - 0
+  force-pseudo-nesting:
+    - 0
+  property-sort-order:
+    - 0
+  mixins-before-declarations:
+    - 0
+  hex-notation:
+    - 1
+    -
+      style: uppercase
+  hex-length:
+    - 1
+    -
+      style: long
+  leading-zero:
+    - 1
+    -
+      include: true
