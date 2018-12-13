@@ -16,9 +16,9 @@ import {
 
 class Minicrop {
 
-  constructor(id) {
-    if (!id) {
-      throw new Error('The first argument is required and must be an <img> or <canvas> id.');
+  constructor(element) {
+    if (!element) {
+      throw new Error('The first argument is required and must be an <img> or <canvas> element.');
     }
 
     // TODO:
@@ -26,7 +26,9 @@ class Minicrop {
     // - Handle zooming
     // - return crop info
 
-    this.element = document.getElementById(id)
+    this.element = element
+    this.cropper = element.getElementsByClassName('image')[0]
+
     // this.options = assign({}, DEFAULTS, isPlainObject(options) && options);
     // this.cropped = false;
     // this.disabled = false;
@@ -54,12 +56,11 @@ class Minicrop {
   }
 
   init() {
-    const { element } = this
+    const { cropper } = this
     // events.bind(element)
-
     // this.load(url);
 
-    let cropper = element.getElementsByClassName('image')[0]
+    this.position()
 
     EVENT_POINTER_DOWN.split(" ").forEach(type => {
       cropper.addEventListener(type, event => {
@@ -68,16 +69,6 @@ class Minicrop {
         let pointer = (event.targetTouches || event.changedTouches || [event])[0]
         this.start.x = pointer['clientX'] - this.offset.x
         this.start.y = pointer['clientY'] - this.offset.y
-
-
-        this.offset = Constrain.move(cropper, element, this.offset)
-
-
-                console.log("before", this.offset.y, cropper.style.top)
-        cropper.style.top  = `${ this.offset.y }px`
-        cropper.style.left = `${ this.offset.x }px`
-
-                console.log("after", this.offset.y, cropper.style.top)
 
         console.log("Touch start", event)
         event.preventDefault()
@@ -96,12 +87,7 @@ class Minicrop {
 
 // console.log(this.offset.x, this.offset.y)
 
-        this.offset = Constrain.move(cropper, element, this.offset)
-
-        cropper.style.top  = `${ this.offset.y }px`
-        cropper.style.left = `${ this.offset.x }px`
-
-        // console.log("Touch change", event)
+        this.position()
         event.preventDefault()
       })
     })
@@ -112,16 +98,19 @@ class Minicrop {
 
         console.log("Touch end", event)
 
-        console.log("end", this.offset.y, cropper.style.top)
-
-        this.offset = Constrain.move(cropper, element, this.offset)
-
-        cropper.style.top  = `${ this.offset.y }px`
-        cropper.style.left = `${ this.offset.x }px`
-
+        this.position()
         event.preventDefault()
       })
     })
+  }
+
+  position() {
+    const { element, cropper } = this
+
+    this.offset = Constrain.move(cropper, element, this.offset)
+
+    cropper.style.top  = `${ this.offset.y }px`
+    cropper.style.left = `${ this.offset.x }px`
   }
 }
 

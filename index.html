@@ -6,14 +6,40 @@
 
     <script src="./sparkline.js" charset="utf-8"></script>
     <style>
-    #minicrop {
-      position: relative;
-      overflow: hidden;
-      width: 750px;
-      height: 750px;
+    h3 {
+      margin: 30px 0 0;
     }
 
-    #minicrop .image {
+    p {
+      margin: 5px 0;
+    }
+
+    .test-background {
+      background: pink;
+      min-width: 10px;
+      min-height: 10px;
+      display: inline-block;
+      border: 1px solid #bbb;
+    }
+
+    .all-directions {
+      width: 750px;
+      height: 500px;
+    }
+
+    .padded {
+      width: 400px;
+      height: 400px;
+    }
+
+
+    .minicrop {
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .minicrop .image {
       position: absolute;
       left: 0;
       top: 0;
@@ -21,13 +47,41 @@
     </style>
   </head>
   <body>
-    <div id="minicrop">
-      <img class="image" src="./tests/fixtures/image.jpg">
+    <h1>Test Cases</h1>
+
+    <h3>Zoomed</h3>
+    <p>
+      Cannot drag past edges to show <span class="test-background"></span> background.
+    </p>
+
+    <div id="minicrop" class="minicrop test-background all-directions">
+      <img class="image" src="./tests/fixtures/landscape.jpg" height="600">
+    </div>
+
+    <h3>Centered vertically in canvas.</h3>
+    <p>
+      Cannot drag past left/right edges to show <span class="test-background"></span> background.
+    </p>
+
+    <div id="minicrop" class="minicrop test-background padded">
+      <img class="image" src="./tests/fixtures/landscape.jpg" height="350">
+    </div>
+
+    <h3>Centered horizontally in canvas.</h3>
+    <p>
+      Cannot drag past top/bottom edges to show <span class="test-background"></span> background.
+    </p>
+
+    <div id="minicrop" class="minicrop test-background padded">
+      <img class="image" src="./tests/fixtures/portrait.jpg" width="350">
     </div>
 
     <script type="module">
       import Minicrop from './src/minicrop.js'
-      let cropper = new Minicrop('minicrop')
+
+      Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
+        new Minicrop(el)
+      })
     </script>
   </body>
 </html>
