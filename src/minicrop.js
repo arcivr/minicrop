@@ -1,5 +1,6 @@
 import Constrain from './constrain.js'
-// import events from './events.js'
+import Structure from './structure.js'
+
 import {
   EVENT_CROP,
   EVENT_CROP_END,
@@ -25,7 +26,7 @@ class Minicrop {
     // - Handle zooming
     // - return crop info
 
-    this.element = element
+    this.element = Structure.build(element)
     this.image = element.getElementsByClassName('image')[0]
     this.cropper = element.getElementsByClassName('crop')[0]
     this.preview = element.getElementsByClassName('image-preview')[0]

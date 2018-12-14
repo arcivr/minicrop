@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`build less than canvas top is fine 1`] = `
+<div
+  class="minicrop"
+  data-image="image"
+>
+  
+    
+  <img
+    class="image"
+    src="image"
+  />
+  
+    
+  <div
+    class="crop"
+  >
+    
+      
+    <img
+      class="image-preview"
+      src="image"
+    />
+    
+    
+  </div>
+  
+  
+</div>
+`;

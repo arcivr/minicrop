@@ -41,51 +41,36 @@
   </head>
   <body>
     <h1>Test Cases</h1>
-    <div class="minicrop test-background default">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="520" alt="">
+    <div class="minicrop test-background default" data-image="./tests/fixtures/landscape.jpg" data-zoom="520"></div>
+     <!-- height="520" alt=""> -->
       <!-- <div class="overlay"></div> -->
-      <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/landscape.jpg" height="520" alt="">
+      <!-- <div class="crop"> -->
+        <!-- <img class="image-preview" src="./tests/fixtures/landscape.jpg" height="520" alt=""> -->
         <!-- Bleed -->
         <!-- Design Overlay -->
-      </div>
-    </div>
+      <!-- </div> -->
+    <!-- </div> -->
 
     <h3>Zoomed</h3>
     <p>
       Cannot drag past edges to show <span class="test-background"></span> background.
     </p>
 
-    <div class="minicrop test-background all-directions">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="500" alt="">
-      <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/landscape.jpg" height="500" alt="">
-      </div>
-    </div>
+    <div class="minicrop test-background all-directions" data-image="./tests/fixtures/landscape.jpg"></div>
 
     <h3>Centered vertically in canvas.</h3>
     <p>
       Cannot drag past left/right edges to show <span class="test-background"></span> background.
     </p>
 
-    <div class="minicrop test-background padded">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="300" alt="">
-      <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/landscape.jpg" height="300" alt="">
-      </div>
-    </div>
+    <div class="minicrop test-background padded" data-image="./tests/fixtures/landscape.jpg" data-zoom="300"></div>
 
     <h3>Centered horizontally in canvas.</h3>
     <p>
       Cannot drag past top/bottom edges to show <span class="test-background"></span> background.
     </p>
 
-    <div class="minicrop test-background padded">
-      <img class="image" src="./tests/fixtures/portrait.jpg" width="300" alt="">
-      <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/portrait.jpg" width="300" alt="">
-      </div>
-    </div>
+    <div class="minicrop test-background padded" data-image="./tests/fixtures/portrait.jpg" data-zoom="300"></div>
 
     <script type="module">
       import Minicrop from './src/minicrop.js'
