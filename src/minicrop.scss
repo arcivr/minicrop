@@ -1,12 +1,95 @@
+$z-image: 1;
+$z-overlay: 2;
+$z-crop: 3;
+$crop-margin: 40px;
+$crop-fade: rgba(55, 55, 75, 0.70);
+$transition-delay: 0.5s;
+$preview-duration: 1s;
+$edit-duration: 100ms;
+
 .minicrop {
   display: block;
-  overflow: hidden;
   position: relative;
-  // overflow: scroll;
+  overflow: hidden;
+
+  transform: translateZ(0);
+
+  &:hover {
+  // &.edit {
+
+    .image {
+      filter: blur(0);
+
+      transition: filter $edit-duration ease-in;
+    }
+
+    .overlay {
+      opacity: 0;
+
+      transition: opacity $edit-duration ease-in;
+    }
+
+    .crop {
+      outline-color: fade-out($crop-fade, 1);
+
+      transition: outline-color $edit-duration ease-in;
+    }
+
+    .image-preview {
+      opacity: 0;
+    }
+  }
 
   .image {
     position: absolute;
-    left: 0;
     top: 0;
+    left: 0;
+    filter: blur(20px);
+
+    z-index: $z-image;
+
+    transition: filter $preview-duration ease-in-out $transition-delay;
+  }
+
+  .overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: $crop-fade;
+    opacity: 1;
+
+    pointer-events: none;
+
+    z-index: $z-overlay;
+
+    transition: opacity $preview-duration ease-in-out $transition-delay;
+  }
+
+  .crop {
+    top:    $crop-margin;
+    right:  $crop-margin;
+    bottom: $crop-margin;
+    left:   $crop-margin;
+
+    position: absolute;
+    overflow: hidden;
+    border: 2px solid white;
+    outline: $crop-margin * 2 solid $crop-fade;
+
+    pointer-events: none;
+
+    z-index: $z-crop;
+
+    transition: outline-color $preview-duration ease-in-out $transition-delay;
+  }
+
+  .image-preview {
+    position: absolute;
+    top: -$crop-margin - 2px;
+    left: -$crop-margin - 2px;
+
+    opacity: 1;
+
+    transition: opacity $edit-duration * 2 ease-in;
   }
 }

@@ -24,19 +24,17 @@ class Minicrop {
     // - Build our HTML
     // - Handle zooming
     // - return crop info
-this.name = "I MEAN REALLY"
+
     this.element = element
-    this.cropper = element.getElementsByClassName('image')[0]
+    this.image = element.getElementsByClassName('image')[0]
+    this.cropper = element.getElementsByClassName('crop')[0]
+    this.preview = element.getElementsByClassName('image-preview')[0]
 
     // this.options = assign({}, DEFAULTS, isPlainObject(options) && options);
     // this.cropped = false;
     // this.disabled = false;
     this.crop = {}
     this.ready = false
-    // this.reloading = false;
-    // this.replaced = false;
-    // this.sized = false;
-    // this.sizing = false;
 
     this.moving = false
 
@@ -55,15 +53,21 @@ this.name = "I MEAN REALLY"
   }
 
   init() {
-    const { cropper } = this
+    const { image } = this
     // events.bind(element)
     // this.load(url);
 
     this.position()
 
+    this.element.addEventListener("mouseover", () => {
+      this.element.classList.remove("preview")
+    })
+
+
     EVENT_POINTER_DOWN.split(" ").forEach(type => {
-      cropper.addEventListener(type, event => {
+      image.addEventListener(type, event => {
         this.moving = true
+        this.element.classList.remove("preview")
 
         let pointer = (event.targetTouches || event.changedTouches || [event])[0]
         this.start.x = pointer['clientX'] - this.offset.x
@@ -75,7 +79,7 @@ this.name = "I MEAN REALLY"
     })
 
     EVENT_POINTER_MOVE.split(" ").forEach(type => {
-      cropper.addEventListener(type, event => {
+      image.addEventListener(type, event => {
         if (!this.moving) {
           return
         }
@@ -92,8 +96,9 @@ this.name = "I MEAN REALLY"
     })
 
     EVENT_POINTER_UP.split(" ").forEach(type => {
-      cropper.addEventListener(type, event => {
+      image.addEventListener(type, event => {
         this.moving = false
+        this.element.classList.add("preview")
 
         console.log("Touch end", event)
 
@@ -104,12 +109,17 @@ this.name = "I MEAN REALLY"
   }
 
   position() {
-    const { element, cropper } = this
+    const { cropper, image, preview } = this
 
-    this.offset = Constrain.move(cropper, element, this.offset)
+    this.offset = Constrain.move(image, cropper, this.offset)
 
-    cropper.style.top  = `${ this.offset.y }px`
-    cropper.style.left = `${ this.offset.x }px`
+    image.style.top  = `${ this.offset.y }px`
+    image.style.left = `${ this.offset.x }px`
+
+    if (preview) {
+      preview.style.top  = `${ this.offset.y - 42 }px`
+      preview.style.left = `${ this.offset.x - 42 }px`
+    }
   }
 }
 

@@ -23,23 +23,23 @@ const imageState = (image, canvas) => {
 
 const move = (image, canvas, movement) => {
   // Restrict top
-  if (movement.y > 0) {
-    movement.y = 0
+  if (movement.y > canvas.offsetTop) {
+    movement.y = canvas.offsetTop
   }
 
   // Restrict bottom
-  let bottom = canvas.offsetHeight - image.offsetHeight
+  let bottom = canvas.offsetTop + canvas.offsetHeight - image.offsetHeight
   if (movement.y < bottom) {
     movement.y = bottom
   }
 
   // Restrict left
-  if (movement.x > 0) {
-    movement.x = 0
+  if (movement.x > canvas.offsetLeft) {
+    movement.x = canvas.offsetLeft
   }
 
   // Restrict right
-  let right = canvas.offsetWidth - image.offsetWidth
+  let right = canvas.offsetLeft + canvas.offsetWidth - image.offsetWidth
   if (movement.x < right) {
     movement.x = right
   }
@@ -49,12 +49,15 @@ const move = (image, canvas, movement) => {
   if (state.padded) {
     if (state.portrait) {
       // Set left to half of margin
-      movement.x = 0 + (canvas.offsetWidth - image.offsetWidth) / 2
+      movement.x = canvas.offsetLeft + ((canvas.offsetWidth - image.offsetWidth) / 2)
     } else {
       // Set top to half of margin
-      movement.y = 0 + (canvas.offsetHeight - image.offsetHeight) / 2
+      movement.y = canvas.offsetTop + ((canvas.offsetHeight - image.offsetHeight) / 2)
     }
   }
+
+  // movement.y += canvas.offsetTop
+  // movement.x += canvas.offsetLeft
 
   return movement
 }

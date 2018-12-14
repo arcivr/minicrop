@@ -37,15 +37,15 @@
     }
     </style>
 
-    <link rel="stylesheet" href="dist/minicrop.css">
+    <link rel="stylesheet" href="minicrop.css">
   </head>
   <body>
     <h1>Test Cases</h1>
     <div class="minicrop test-background default">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="520" alt="">
+      <img class="image" src="landscape.jpg" height="520" alt="">
       <!-- <div class="overlay"></div> -->
       <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/landscape.jpg" height="520" alt="">
+        <img class="image-preview" src="landscape.jpg" height="520" alt="">
         <!-- Bleed -->
         <!-- Design Overlay -->
       </div>
@@ -57,9 +57,9 @@
     </p>
 
     <div class="minicrop test-background all-directions">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="500" alt="">
+      <img class="image" src="landscape.jpg" height="500" alt="">
       <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/landscape.jpg" height="500" alt="">
+        <img class="image-preview" src="landscape.jpg" height="500" alt="">
       </div>
     </div>
 
@@ -69,9 +69,9 @@
     </p>
 
     <div class="minicrop test-background padded">
-      <img class="image" src="./tests/fixtures/landscape.jpg" height="300" alt="">
+      <img class="image" src="landscape.jpg" height="300" alt="">
       <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/landscape.jpg" height="300" alt="">
+        <img class="image-preview" src="landscape.jpg" height="300" alt="">
       </div>
     </div>
 
@@ -81,14 +81,14 @@
     </p>
 
     <div class="minicrop test-background padded">
-      <img class="image" src="./tests/fixtures/portrait.jpg" width="300" alt="">
+      <img class="image" src="portrait.jpg" width="300" alt="">
       <div class="crop">
-        <img class="image-preview" src="./tests/fixtures/portrait.jpg" width="300" alt="">
+        <img class="image-preview" src="portrait.jpg" width="300" alt="">
       </div>
     </div>
 
     <script type="module">
-      import Minicrop from './src/minicrop.js'
+      import Minicrop from './minicrop.esm.js'
 
       Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
         new Minicrop(el)
