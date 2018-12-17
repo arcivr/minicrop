@@ -2,68 +2,54 @@ $z-image: 1;
 $z-overlay: 2;
 $z-crop: 3;
 $crop-margin: 40px;
-$crop-fade: rgba(55, 55, 75, .70);
-$transition-delay: 0.5s;
-$preview-duration: 1s;
+$crop-fade-preview: rgba(55, 55, 75, 0.7);
+$crop-fade-edit:    rgba(55, 55, 75, 0.2);
+$transition-delay: 250ms;
+$preview-duration: 750ms;
 $edit-duration: 100ms;
 
 .minicrop {
   display: block;
   position: relative;
+  width: 100%;
   overflow: hidden;
+
+  background: #fff;
 
   transform: translateZ(0);
 
-  &:hover {
-  // &.edit {
+  // &:hover,
+  &.edit {
 
     .image {
-      filter: blur(0);
+      // filter: blur(0);
 
       transition: filter $edit-duration ease-in;
     }
 
-    // .overlay {
-    //   opacity: 0;
-    //
-    //   transition: opacity $edit-duration ease-in;
-    // }
-
     .crop {
-      outline-color: fade-out($crop-fade, 1);
+      outline-color: $crop-fade-edit;
 
       transition: outline-color $edit-duration ease-in;
     }
 
-    .image-preview {
-      opacity: 0;
-    }
+    // .image-preview {
+    //   opacity: 0;
+    // }
   }
 
   .image {
     position: absolute;
     top: 0;
     left: 0;
-    filter: blur(20px);
+    // filter: blur(20px);
+
+    // transform: scale(0.86);
 
     z-index: $z-image;
 
     transition: filter $preview-duration ease-in-out $transition-delay;
   }
-
-  // .overlay {
-  //   position: relative;
-  //   width: 100%;
-  //   height: 100%;
-  //   background: $crop-fade;
-  //   opacity: 1;
-  //
-  //   pointer-events: none;
-  //
-  //   z-index: $z-overlay;
-  //
-  //   transition: opacity $preview-duration ease-in-out $transition-delay;
-  // }
 
   .crop {
     top:    $crop-margin;
@@ -74,7 +60,7 @@ $edit-duration: 100ms;
     position: absolute;
     overflow: hidden;
     border: 2px solid white;
-    outline: $crop-margin * 2 solid $crop-fade;
+    outline: $crop-margin * 2 solid $crop-fade-preview;
 
     pointer-events: none;
 
@@ -83,13 +69,13 @@ $edit-duration: 100ms;
     transition: outline-color $preview-duration ease-in-out $transition-delay;
   }
 
-  .image-preview {
-    position: absolute;
-    top: -$crop-margin - 2px;
-    left: -$crop-margin - 2px;
-
-    opacity: 1;
-
-    transition: opacity $edit-duration * 2 ease-in;
-  }
+  // .image-preview {
+  //   position: absolute;
+  //   top: -$crop-margin - 2px;
+  //   left: -$crop-margin - 2px;
+  //
+  //   opacity: 1;
+  //
+  //   transition: opacity $edit-duration * 2 ease-in;
+  // }
 }

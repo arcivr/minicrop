@@ -1,6 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`build snapshot 1`] = `
+exports[`Minicrop crop response 1`] = `
+Object {
+  "height": 0,
+  "ratio": 1,
+  "rotated": false,
+  "width": 0,
+  "x": -40,
+  "y": -40,
+}
+`;
+
+exports[`Minicrop result 1`] = `
 <div
   class="minicrop"
   data-image="image"
@@ -12,6 +23,7 @@ exports[`build snapshot 1`] = `
     class="image"
     height="100%"
     src="image"
+    style="top: 0px; left: 0px;"
   />
   
     

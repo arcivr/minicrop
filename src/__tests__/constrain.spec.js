@@ -12,6 +12,8 @@ describe("move", () => {
   }
 
   const canvas = {
+    offsetTop: 0,
+    offsetLeft: 0,
     offsetWidth: 100,
     offsetHeight: 100
   }
