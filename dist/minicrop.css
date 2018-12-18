@@ -1,26 +1,21 @@
 .minicrop {
   display: block;
   position: relative;
+  width: 100%;
   overflow: hidden;
+  background: #FFFFFF;
   transform: translateZ(0);
 }
-.minicrop:hover .image {
-  filter: blur(0);
-  transition: filter 100ms ease-in;
-}
-.minicrop:hover .crop {
-  outline-color: rgba(55, 55, 75, 0);
+.minicrop.edit .crop {
+  outline-color: rgba(55, 55, 75, 0.2);
   transition: outline-color 100ms ease-in;
-}
-.minicrop:hover .image-preview {
-  opacity: 0;
 }
 .minicrop .image {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
-  transition: filter 1s ease-in-out 0.5s;
+  transition: filter 750ms ease-in-out 250ms;
 }
 .minicrop .crop {
   top: 40px;
@@ -29,16 +24,9 @@
   left: 40px;
   position: absolute;
   overflow: hidden;
-  border: 2px solid white;
+  border: 2px solid #FFFFFF;
   outline: 80px solid rgba(55, 55, 75, 0.7);
   pointer-events: none;
   z-index: 3;
-  transition: outline-color 1s ease-in-out 0.5s;
-}
-.minicrop .image-preview {
-  position: absolute;
-  top: -42px;
-  left: -42px;
-  opacity: 1;
-  transition: opacity 200ms ease-in;
+  transition: outline-color 750ms ease-in-out 250ms;
 }
