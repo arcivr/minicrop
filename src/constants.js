@@ -2,6 +2,7 @@ export const IN_BROWSER = typeof window !== 'undefined'
 export const WINDOW = IN_BROWSER ? window : {}
 
 export const MARGIN = 40
+export const ZOOM_MAXIMUM = 5
 // export const NAMESPACE = 'minicrop'
 //
 // // Actions

@@ -19,19 +19,19 @@ describe("build", () => {
       .toMatch('src="image"')
   })
 
-  describe("ratio", () => {
-    test('defaults to 1:1 ratio', () => {
-      expect(build(root).style.paddingTop)
-        .toEqual("100%")
-    })
-
-    test('defaults to 1:1 ratio', () => {
-      root.dataset.ratio = 0.54321
-
-      expect(build(root).style.paddingTop)
-        .toEqual("54.321%")
-    })
-  })
+  // describe("ratio", () => {
+  //   test('defaults to 1:1 ratio', () => {
+  //     expect(build(root).style.paddingTop)
+  //       .toEqual("100%")
+  //   })
+  //
+  //   test('defaults to 1:1 ratio', () => {
+  //     root.dataset.ratio = 0.54321
+  //
+  //     expect(build(root).style.paddingTop)
+  //       .toEqual("54.321%")
+  //   })
+  // })
 
   describe("zoom", () => {
     test('defaults to 100% zoom', () => {

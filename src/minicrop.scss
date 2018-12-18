@@ -14,36 +14,23 @@ $edit-duration: 100ms;
   width: 100%;
   overflow: hidden;
 
-  background: #fff;
+  background: #FFFFFF;
 
   transform: translateZ(0);
 
   // &:hover,
   &.edit {
-
-    .image {
-      // filter: blur(0);
-
-      transition: filter $edit-duration ease-in;
-    }
-
     .crop {
       outline-color: $crop-fade-edit;
 
       transition: outline-color $edit-duration ease-in;
     }
-
-    // .image-preview {
-    //   opacity: 0;
-    // }
   }
 
   .image {
     position: absolute;
     top: 0;
     left: 0;
-    // filter: blur(20px);
-
     // transform: scale(0.86);
 
     z-index: $z-image;
@@ -59,7 +46,7 @@ $edit-duration: 100ms;
 
     position: absolute;
     overflow: hidden;
-    border: 2px solid white;
+    border: 2px solid #FFFFFF;
     outline: $crop-margin * 2 solid $crop-fade-preview;
 
     pointer-events: none;
@@ -68,14 +55,4 @@ $edit-duration: 100ms;
 
     transition: outline-color $preview-duration ease-in-out $transition-delay;
   }
-
-  // .image-preview {
-  //   position: absolute;
-  //   top: -$crop-margin - 2px;
-  //   left: -$crop-margin - 2px;
-  //
-  //   opacity: 1;
-  //
-  //   transition: opacity $edit-duration * 2 ease-in;
-  // }
 }

@@ -15,7 +15,6 @@ exports[`Minicrop result 1`] = `
 <div
   class="minicrop"
   data-image="image"
-  style="padding-top: 100%;"
 >
   
     

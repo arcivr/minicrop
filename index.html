@@ -13,6 +13,31 @@
       margin: 5px 0;
     }
 
+    .zoom-level {
+      position: fixed;
+
+      top: 0;
+      right: 0;
+
+      margin: 10px;
+    }
+
+    .zoom,
+    .zoom-in,
+    .zoom-out {
+      display: inline-block;
+      border: 1px solid #ddd;
+      padding: 5px;
+      background: white;
+
+      cursor: pointer;
+
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
     .debug-preview {
       float: right;
       margin-top: -300px;
@@ -44,6 +69,19 @@
   </head>
   <body>
     <h1>Test Cases</h1>
+    <ul class="zoom-level">
+      <li class="zoom-in">+</li>
+      <li class="zoom-out">-</li>
+      <li class="zoom" data-zoom="2.0">2.0</li>
+      <li class="zoom" data-zoom="1.0">1.0</li>
+      <li class="zoom" data-zoom="0.95">0.95</li>
+      <li class="zoom" data-zoom="0.90">0.90</li>
+      <li class="zoom" data-zoom="0.85">0.85</li>
+      <li class="zoom" data-zoom="0.80">0.80</li>
+      <li class="zoom" data-zoom="0.75">0.75</li>
+      <li class="zoom" data-zoom="0.70">0.70</li>
+      <li class="zoom" data-zoom="0.65">0.65</li>
+    </ul>
     <pre class="debug"></pre>
     <div class="minicrop default" data-image="./tests/fixtures/landscape.jpg" data-ratio="0.8"></div>
     <img src="./tests/fixtures/landscape.jpg" class="debug-preview">
@@ -85,8 +123,47 @@
     <script type="module">
       import Minicrop from './src/minicrop.js'
 
+      var zoom = 1
+
+      document.getElementsByClassName('zoom-in')[0].addEventListener('click', function(e) {
+        e.preventDefault()
+
+        zoom += 0.05
+
+        let event = new CustomEvent('zoom', { detail: zoom })
+        Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
+          el.dispatchEvent(event)
+        })
+      })
+
+      document.getElementsByClassName('zoom-out')[0].addEventListener('click', function(e) {
+        e.preventDefault()
+
+        zoom -= 0.05
+
+        let event = new CustomEvent('zoom', { detail: zoom })
+        Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
+          el.dispatchEvent(event)
+        })
+      })
+
+      Array.from(document.getElementsByClassName('zoom')).forEach(el => {
+        el.addEventListener('click', function(e) {
+          e.preventDefault()
+
+          let event = new CustomEvent('zoom', { detail: this.dataset.zoom })
+          Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
+            el.dispatchEvent(event)
+          })
+        })
+      })
+
       Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
-        new Minicrop(el)
+        el.cropper = new Minicrop(el)
+
+        el.addEventListener('zoom', function(e) {
+          this.cropper.zoom(e.detail)
+        })
 
         el.addEventListener('crop', function(e) {
           let crop = e.detail

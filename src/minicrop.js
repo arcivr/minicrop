@@ -27,8 +27,10 @@ class Minicrop {
     // - return crop info
 
     this.element = Structure.build(element)
-    this.image = element.getElementsByClassName('image')[0]
     this.cropper = element.getElementsByClassName('crop')[0]
+    this.image   = element.getElementsByClassName('image')[0]
+    this.image.originalWidth  = this.image.offsetWidth
+    this.image.originalHeight = this.image.offsetHeight
 
     this.rotated = false
     // this.options = assign({}, DEFAULTS, isPlainObject(options) && options);
@@ -52,7 +54,6 @@ class Minicrop {
     this.element.addEventListener("mouseover", () => {
       this.element.classList.remove("preview")
     })
-
 
     EVENT_POINTER_DOWN.split(" ").forEach(type => {
       image.addEventListener(type, event => {
@@ -103,15 +104,27 @@ class Minicrop {
   }
 
   position() {
-    const { cropper, image } = this
+    let { image } = this
 
-    this.offset = Constrain.move(image, cropper, this.offset)
+    this.offset = Constrain.move(this)
 
     image.style.top  = `${ this.offset.y }px`
     image.style.left = `${ this.offset.x }px`
 
     let cropEvent = new CustomEvent(EVENT_CROP, { detail: this.crop() })
     this.element.dispatchEvent(cropEvent)
+  }
+
+  zoom(scale) {
+    let { image } = this
+
+    this.scale = scale
+    this.scale = Constrain.zoom(this)
+
+    image.style.width  = `${ image.originalWidth  * this.scale }px`
+    image.style.height = `${ image.originalHeight * this.scale }px`
+
+    this.position()
   }
 
   crop() {

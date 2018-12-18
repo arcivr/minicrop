@@ -1,14 +1,9 @@
 const build = (root) => {
-  // .minicrop
-  //   image
-  //   .crop // overlay: hidden
-  //     image
-  //
   //
   // Container (background)
   //   Full Size Image
   //   Crop Box + Fade Overlay
-  //     Visible Image
+  //     <!-- Visible Image -->
   //     Bleed
   //     Design Overlay
 

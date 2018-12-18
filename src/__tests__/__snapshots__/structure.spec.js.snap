@@ -4,7 +4,6 @@ exports[`build snapshot 1`] = `
 <div
   class="minicrop"
   data-image="image"
-  style="padding-top: 100%;"
 >
   
     
