@@ -1,32 +1,22 @@
 import Constrain from './constrain.js'
 import Structure from './structure.js'
+import Events from './events.js'
 
 import {
   MARGIN,
   EVENT_CROP,
-  // EVENT_CROP_END,
-  // EVENT_CROP_MOVE,
-  // EVENT_CROP_START,
-  EVENT_POINTER_DOWN,
-  EVENT_POINTER_MOVE,
-  EVENT_POINTER_UP,
-  // EVENT_RESIZE,
-  // EVENT_WHEEL,
-  // EVENT_ZOOM,
+  EVENT_ZOOM,
 } from './constants.js'
 
 class Minicrop {
   constructor(element) {
     if (!element) {
+      // TODO: actually check element type
       throw new Error('The first argument is required and must be an <img> element.');
     }
 
-    // TODO:
-    // - Build our HTML
-    // - Handle zooming
-    // - return crop info
-
     this.element = Structure.build(element)
+
     this.cropper = element.getElementsByClassName('crop')[0]
     this.image   = element.getElementsByClassName('image')[0]
     this.image.originalWidth  = this.image.offsetWidth
@@ -45,66 +35,15 @@ class Minicrop {
   }
 
   init() {
-    const { image } = this
-    // events.bind(element)
     // this.load(url);
 
+    Events.bind(this)
+    // TODO: run position after loading image
     this.position()
-
-    this.element.addEventListener("mouseover", () => {
-      this.element.classList.remove("preview")
-    })
-
-    EVENT_POINTER_DOWN.split(" ").forEach(type => {
-      image.addEventListener(type, event => {
-        if (this.disabled) {
-          return
-        }
-
-        this.moving = true
-        this.element.classList.add("edit")
-
-        let pointer = (event.targetTouches || event.changedTouches || [event])[0]
-        this.start.x = pointer['clientX'] - this.offset.x
-        this.start.y = pointer['clientY'] - this.offset.y
-
-        // console.log("Touch start", event, type)
-        event.preventDefault()
-      })
-    })
-
-    EVENT_POINTER_MOVE.split(" ").forEach(type => {
-      image.addEventListener(type, event => {
-        if (this.disabled || !this.moving) {
-          return
-        }
-
-        // console.log("Touch Move", type)
-
-        let pointer = (event.targetTouches || event.changedTouches || [event])[0]
-        this.offset.x = pointer['clientX'] - this.start.x
-        this.offset.y = pointer['clientY'] - this.start.y
-
-        this.position()
-        event.preventDefault()
-      })
-    })
-
-    EVENT_POINTER_UP.split(" ").forEach(type => {
-      image.addEventListener(type, event => {
-        this.moving = false
-        this.element.classList.remove("edit")
-
-        // console.log("Touch end", type, event)
-
-        this.position()
-        event.preventDefault()
-      })
-    })
   }
 
   position() {
-    let { image } = this
+    let { image, element } = this
 
     this.offset = Constrain.move(this)
 
@@ -112,17 +51,20 @@ class Minicrop {
     image.style.left = `${ this.offset.x }px`
 
     let cropEvent = new CustomEvent(EVENT_CROP, { detail: this.crop() })
-    this.element.dispatchEvent(cropEvent)
+    element.dispatchEvent(cropEvent)
   }
 
   zoom(scale) {
-    let { image } = this
+    let { image, element } = this
 
     this.scale = scale
     this.scale = Constrain.zoom(this)
 
     image.style.width  = `${ image.originalWidth  * this.scale }px`
     image.style.height = `${ image.originalHeight * this.scale }px`
+
+    let zoomEvent = new CustomEvent(EVENT_ZOOM, { detail: { zoom: this.scale } })
+    element.dispatchEvent(zoomEvent)
 
     this.position()
   }

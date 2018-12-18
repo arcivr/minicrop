@@ -1,34 +1,19 @@
 import {
-  EVENT_CROP,
-  EVENT_CROP_END,
-  EVENT_CROP_MOVE,
-  EVENT_CROP_START,
-  EVENT_DBLCLICK,
   EVENT_POINTER_DOWN,
   EVENT_POINTER_MOVE,
   EVENT_POINTER_UP,
   EVENT_RESIZE,
   EVENT_WHEEL,
-  EVENT_ZOOM,
 } from './constants.js'
 
-import {
-  addListener,
-  isFunction,
-  removeListener,
-} from './utilities.js'
-
-import _ from '../node_modules/lodash-es/lodash.default.js'
-
 export default {
-  bind(element) {
-
-
-    // canvas.addEventListener("gestureStart", event => {
-    //   event.preventDefault()
-    // })
-
-    let cropper = element.getElementsByClassName('image')[0]
+  bind(minicrop) {
+    let {
+      image,
+      element,
+      start,
+      offset
+    } = minicrop
 
     // cropper.addEventListener("gesturestart", event => {
     //   console.log("Gesture start", event)
@@ -44,59 +29,56 @@ export default {
     //   console.log("Gesture end", event)
     //   event.preventDefault()
     // })
-console.log("DEBUG", EVENT_POINTER_DOWN, cropper)
+
+
+    // cropper.addEventListener(EVENT_WHEEL, (this.onWheel = this.wheel.bind(this)))
+
+    // if (options.responsive) {
+    //   window.addEventListener(EVENT_RESIZE, (this.onResize = this.resize.bind(this)))
+    // }
+
 
     EVENT_POINTER_DOWN.split(" ").forEach(type => {
-      cropper.addEventListener(type, event => {
-        console.log("Touch start", event)
+      image.addEventListener(type, event => {
+        if (minicrop.disabled) {
+          return
+        }
+
+        minicrop.moving = true
+        element.classList.add("edit")
+
+        let pointer = (event.targetTouches || event.changedTouches || [event])[0]
+        start.x = pointer['clientX'] - offset.x
+        start.y = pointer['clientY'] - offset.y
+
         event.preventDefault()
       })
     })
 
     EVENT_POINTER_MOVE.split(" ").forEach(type => {
-      cropper.addEventListener(type, event => {
-        console.log("Touch change", event)
+      image.addEventListener(type, event => {
+        if (minicrop.disabled || !minicrop.moving) {
+          return
+        }
+
+        let pointer = (event.targetTouches || event.changedTouches || [event])[0]
+        offset.x = pointer['clientX'] - start.x
+        offset.y = pointer['clientY'] - start.y
+
+        minicrop.position()
         event.preventDefault()
       })
     })
 
     EVENT_POINTER_UP.split(" ").forEach(type => {
-      cropper.addEventListener(type, event => {
-        console.log("Touch end", event)
+      image.addEventListener(type, event => {
+        minicrop.moving = false
+        element.classList.remove("edit")
+
+        minicrop.position()
         event.preventDefault()
       })
     })
-
-
-
-    // if (isFunction(options.cropstart)) {
-    //   element.addEventListener(EVENT_CROP_START, options.cropstart)
-    // }
-    //
-    // if (isFunction(options.cropmove)) {
-    //   element.addEventListener(EVENT_CROP_MOVE, options.cropmove)
-    // }
-    //
-    // if (isFunction(options.cropend)) {
-    //   element.addEventListener(EVENT_CROP_END, options.cropend)
-    // }
-    //
-    // if (isFunction(options.crop)) {
-    //   element.addEventListener(EVENT_CROP, options.crop)
-    // }
-    //
-    // if (isFunction(options.zoom)) {
-    //   element.addEventListener(EVENT_ZOOM, options.zoom)
-    // }
-
-    // cropper.addEventListener(EVENT_WHEEL, (this.onWheel = this.wheel.bind(this)))
-    // cropper.addEventListener(EVENT_POINTER_DOWN, (this.onCropStart = this.cropStart.bind(this)))
-    // element.addEventListener(EVENT_POINTER_MOVE, (this.onCropMove = this.cropMove.bind(this)))
-    // element.addEventListener(EVENT_POINTER_UP, (this.onCropEnd = this.cropEnd.bind(this)))
-    //
-    // if (options.responsive) {
-    //   window.addEventListener(EVENT_RESIZE, (this.onResize = this.resize.bind(this)))
-    // }
   },
 
   unbind(element) {
@@ -120,13 +102,13 @@ console.log("DEBUG", EVENT_POINTER_DOWN, cropper)
     //   element.removeEventListener(EVENT_ZOOM, options.zoom)
     // }
 
-    cropper.removeEventListener(EVENT_WHEEL, this.onWheel)
-    cropper.removeEventListener(EVENT_POINTER_DOWN, this.onCropStart)
-    element.removeEventListener(EVENT_POINTER_MOVE, this.onCropMove)
-    element.removeEventListener(EVENT_POINTER_UP, this.onCropEnd)
-
-    if (options.responsive) {
-      window.removeEventListener(EVENT_RESIZE, this.onResize)
-    }
-  },
+    // cropper.removeEventListener(EVENT_WHEEL, this.onWheel)
+    // cropper.removeEventListener(EVENT_POINTER_DOWN, this.onCropStart)
+    // element.removeEventListener(EVENT_POINTER_MOVE, this.onCropMove)
+    // element.removeEventListener(EVENT_POINTER_UP, this.onCropEnd)
+    //
+    // if (options.responsive) {
+    //   window.removeEventListener(EVENT_RESIZE, this.onResize)
+    // }
+  }
 }
