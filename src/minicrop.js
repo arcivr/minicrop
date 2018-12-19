@@ -23,7 +23,6 @@ class Minicrop {
     this.image.originalWidth  = this.image.offsetWidth
     this.image.originalHeight = this.image.offsetHeight
 
-    this.rotated = false
     // this.options = assign({}, DEFAULTS, isPlainObject(options) && options);
     this.disabled = false
     this.ready = false
@@ -33,17 +32,18 @@ class Minicrop {
     this.start  = { x: 0, y: 0 }
     this.offset = { x: 0, y: 0 }
     this.scale = 1
+    this.ratio = this.element.dataset.ratio || 1
 
     this.init()
   }
 
   init() {
-    // this.load(url);
+    this.image.addEventListener("load", () => {
+      this.position()
+      this.resize()
+    })
 
-    // Events.bind(this)
-    new Events(this)
-    // TODO: run position after loading image
-    this.position()
+    this.events = new Events(this)
   }
 
   editing(type) {
@@ -94,16 +94,25 @@ class Minicrop {
     this.position()
   }
 
+  resize(ratio) {
+    this.ratio = ratio || this.ratio || 1
+
+    let { element } = this
+
+    element.style.height = `${ element.offsetWidth * this.ratio }px`
+
+    this.position()
+  }
+
   crop() {
-    const { image, cropper, rotated } = this
+    const { image, cropper } = this
 
     return {
       x: image.offsetLeft - MARGIN,
       y: image.offsetTop - MARGIN,
       width: cropper.offsetWidth,
       height: cropper.offsetHeight,
-      ratio: (image.naturalWidth / image.offsetWidth) || 1,
-      rotated
+      ratio: (image.naturalWidth / image.offsetWidth) || 1
     }
   }
 }

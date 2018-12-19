@@ -16,13 +16,7 @@ exports[`build snapshot 1`] = `
     
   <div
     class="crop"
-  >
-    
-      
-    <!-- &lt;img src="image" class="image-preview" height="100%" /&gt; -->
-    
-    
-  </div>
+  />
   
   
 </div>

@@ -18,15 +18,15 @@ class Events {
   }
 
   bind() {
-    let { image } = this.minicrop
+    let { element } = this.minicrop
 
     // if (options.responsive) {
-    //   window.addEventListener(EVENT_RESIZE, (this.onResize = this.resize.bind(this)))
+    window.addEventListener(EVENT_RESIZE, this)
     // }
 
     ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
       .forEach(type => {
-        image.addEventListener(type, this)
+        element.addEventListener(type, this)
       })
   }
 
@@ -130,7 +130,6 @@ class Events {
     if (!center) {
       center = { x: event.offsetX, y: event.offsetY }
     }
-    console.log(center)
 
     let delta = direction * Math.log(Math.abs(event.deltaY)) / smoothing
     let scale = this.minicrop.scale + delta
@@ -177,6 +176,10 @@ class Events {
   }
 
   handleEvent(event) {
+    if (EVENT_RESIZE.includes(event.type)) {
+      this.minicrop.resize(event)
+    }
+
     if (EVENT_WHEEL.includes(event.type)) {
       this.zoom(event)
     }
