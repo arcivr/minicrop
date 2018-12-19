@@ -29,9 +29,11 @@ class Minicrop {
     this.ready = false
     this.moving = false
     this.zooming = false
+    this.gesturing = false
 
     this.start  = { x: 0, y: 0 }
     this.offset = { x: 0, y: 0 }
+    this.scale = 1
 
     this.init()
   }
@@ -43,10 +45,6 @@ class Minicrop {
     new Events(this)
     // TODO: run position after loading image
     this.position()
-
-    let dot = document.createElement("div")
-    dot.classList.add("debug-dot")
-    this.cropper.appendChild(dot)
   }
 
   editing(type) {

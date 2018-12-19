@@ -2,78 +2,54 @@ import {
   EVENT_POINTER_DOWN,
   EVENT_POINTER_MOVE,
   EVENT_POINTER_UP,
+  EVENT_GESTURE_DOWN,
+  EVENT_GESTURE_MOVE,
+  EVENT_GESTURE_UP,
   EVENT_RESIZE,
   EVENT_WHEEL,
   CLASS_ZOOMING,
-  CLASS_MOVING
+  CLASS_MOVING,
+  CLASS_GESTURING
 } from './constants.js'
-
-// var editingTimeout
-// var lastStep = 0
 
 class Events {
   constructor(minicrop) {
-    // let {
-    //   image,
-    //   start,
-    //   offset
-    // } = minicrop
     this.minicrop = minicrop
     this.editingTimeout = null
-    this.pointerDistance = 0
+    this.pointerOffset = 0
     this.gesturing = false
 
-    this.init()
+    this.bind()
   }
 
-  init() {
+  bind() {
     let { image } = this.minicrop
-
-    // image.addEventListener("gesturestart", event => {
-    //   if (this.gesturing) {
-    //     return
-    //   }
-    //
-    //   this.gesturing = true
-    //
-    //   console.log("Gesture start", event)
-    //   event.preventDefault()
-    // })
-    //
-    // image.addEventListener("gesturechange", event => {
-    //   if (!this.gesturing) {
-    //     return
-    //   }
-    //
-    //   console.log("Gesture change", event)
-    //   event.preventDefault()
-    // })
-    //
-    // image.addEventListener("gestureend", event => {
-    //   this.gesturing = false
-    //
-    //   console.log("Gesture end", event)
-    //   event.preventDefault()
-    // });
 
     // if (options.responsive) {
     //   window.addEventListener(EVENT_RESIZE, (this.onResize = this.resize.bind(this)))
     // }
 
-
-    ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
+    ;[EVENT_GESTURE_DOWN, EVENT_GESTURE_MOVE, EVENT_GESTURE_UP, EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
       .forEach(type => {
         image.addEventListener(type, this)
       })
   }
 
-  cropStart(event) {
+  unbind() {
+    let { image } = this.minicrop
+
+    ;[EVENT_GESTURE_DOWN, EVENT_GESTURE_MOVE, EVENT_GESTURE_UP, EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
+      .forEach(type => {
+        image.removeEventListener(type, this)
+      })
+  }
+
+  // Dragging
+
+  dragStart(event) {
     event.preventDefault()
 
-    let {
-      start,
-      offset
-    } = this.minicrop
+    let { start, offset } = this.minicrop
 
     if (this.minicrop.disabled) {
       return
@@ -81,7 +57,7 @@ class Events {
 
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
-      this.pointerDistance = this.getPointerDistance(pointers)
+      this.pointerOffset = this.getPointerDistance(pointers)
 
       return
     }
@@ -93,13 +69,14 @@ class Events {
     start.y = pointer['clientY'] - offset.y
   }
 
-  cropMove(event) {
+  dragMove(event) {
     event.preventDefault()
 
-    let {
-      start,
-      offset
-    } = this.minicrop
+    if (this.minicrop.disabled || this.minicrop.gesturing) {
+      return
+    }
+
+    let { start, offset } = this.minicrop
 
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
@@ -108,7 +85,7 @@ class Events {
       return
     }
 
-    if (this.minicrop.disabled || !this.minicrop.moving) {
+    if (!this.minicrop.moving) {
       return
     }
 
@@ -119,24 +96,26 @@ class Events {
     this.minicrop.position()
   }
 
-  cropEnd(event) {
+  dragEnd(event) {
     this.minicrop.edited(CLASS_MOVING)
     this.minicrop.position()
     event.preventDefault()
   }
 
-  pinch(pointers) {
-    let zoomEvent = new CustomEvent("zoom")
-    let distance = this.getPointerDistance(pointers)
-    let center = this.getPointersCenter(pointers)
+  // Zooming
 
-    zoomEvent.deltaY = distance - this.pointerDistance
+  pinch(pointers, scale, center) {
+    scale = scale || this.getPointerDistance(pointers)
+    center = center || this.getPointersCenter(pointers)
+
+    let zoomEvent = new CustomEvent("zoom")
+    zoomEvent.deltaY = scale - this.pointerOffset
 
     this.zoom(zoomEvent, center)
-    this.pointerDistance = distance
+    this.pointerOffset = scale
   }
 
-  zoom(event, location) {
+  zoom(event, center) {
     event.preventDefault()
 
     if (this.minicrop.disabled || Math.abs(event.deltaY) == 0) {
@@ -153,14 +132,15 @@ class Events {
       smoothing = 15
     }
 
-    if (!location) {
-      location = { x: event.offsetX, y: event.offsetY }
+    if (!center) {
+      center = { x: event.offsetX, y: event.offsetY }
     }
+    console.log(center)
 
     let delta = direction * Math.log(Math.abs(event.deltaY)) / smoothing
     let scale = this.minicrop.scale + delta
 
-    this.minicrop.zoom(scale, location)
+    this.minicrop.zoom(scale, center)
 
     if (this.editingTimeout) {
       clearTimeout(this.editingTimeout)
@@ -170,6 +150,39 @@ class Events {
       this.minicrop.edited(CLASS_ZOOMING)
     }, 200)
   }
+
+  // Gesturing
+
+  gestureStart(event) {
+    event.preventDefault()
+
+    if (this.minicrop.disabled) {
+      return
+    }
+
+    this.minicrop.editing(CLASS_GESTURING)
+    this.pointerOffset = event.scale / 10
+  }
+
+  gestureMove(event) {
+    event.preventDefault()
+
+    if (this.minicrop.disabled || !this.minicrop.gesturing) {
+      return
+    }
+
+    let scale = event.scale / 10
+    let center = { x: event.clientX * this.minicrop.scale, y: event.clientY * this.minicrop.scale }
+    this.pinch(null, scale, center)
+  }
+
+  gestureEnd(event) {
+    this.minicrop.edited(CLASS_GESTURING)
+    this.minicrop.position()
+    event.preventDefault()
+  }
+
+  // Utilities
 
   getPointerDistance(pointers) {
     let { clientX: x1, clientY: y1 } = pointers[0]
@@ -184,7 +197,7 @@ class Events {
     let y = 0
     let count = 0
 
-    pointers.forEach(({ clientX, clientY }) => {
+    Array.from(pointers).forEach(({ clientX, clientY }) => {
       x += clientX
       y += clientY
       count += 1
@@ -205,48 +218,29 @@ class Events {
     }
 
     if (EVENT_POINTER_DOWN.includes(event.type)) {
-      this.cropStart(event)
+      this.dragStart(event)
     }
 
     if (EVENT_POINTER_MOVE.includes(event.type)) {
-      this.cropMove(event)
+      this.dragMove(event)
     }
 
     if (EVENT_POINTER_UP.includes(event.type)) {
-      this.cropEnd(event)
+      this.dragEnd(event)
+    }
+
+    if (EVENT_GESTURE_DOWN.includes(event.type)) {
+      this.gestureStart(event)
+    }
+
+    if (EVENT_GESTURE_MOVE.includes(event.type)) {
+      this.gestureMove(event)
+    }
+
+    if (EVENT_GESTURE_UP.includes(event.type)) {
+      this.gestureEnd(event)
     }
   }
-
-  // unbind(element) {
-    // if (isFunction(options.cropstart)) {
-    //   element.removeEventListener(EVENT_CROP_START, options.cropstart)
-    // }
-    //
-    // if (isFunction(options.cropmove)) {
-    //   element.removeEventListener(EVENT_CROP_MOVE, options.cropmove)
-    // }
-    //
-    // if (isFunction(options.cropend)) {
-    //   element.removeEventListener(EVENT_CROP_END, options.cropend)
-    // }
-    //
-    // if (isFunction(options.crop)) {
-    //   element.removeEventListener(EVENT_CROP, options.crop)
-    // }
-    //
-    // if (isFunction(options.zoom)) {
-    //   element.removeEventListener(EVENT_ZOOM, options.zoom)
-    // }
-
-    // cropper.removeEventListener(EVENT_WHEEL, this.onWheel)
-    // cropper.removeEventListener(EVENT_POINTER_DOWN, this.onCropStart)
-    // element.removeEventListener(EVENT_POINTER_MOVE, this.onCropMove)
-    // element.removeEventListener(EVENT_POINTER_UP, this.onCropEnd)
-    //
-    // if (options.responsive) {
-    //   window.removeEventListener(EVENT_RESIZE, this.onResize)
-    // }
-  // }
 }
 
 export default Events
