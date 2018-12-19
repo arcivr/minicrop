@@ -92,7 +92,7 @@ const move = (minicrop) => {
 }
 
 const zoom = (minicrop) => {
-  var scale = minicrop.scale || 1
+  var scale = Math.abs(minicrop.scale || 1)
   let state = imageState(minicrop, scale)
 
   scale = Math.min(scale, ZOOM_MAXIMUM)

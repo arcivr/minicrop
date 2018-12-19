@@ -4,84 +4,199 @@ import {
   EVENT_POINTER_UP,
   EVENT_RESIZE,
   EVENT_WHEEL,
+  CLASS_ZOOMING,
+  CLASS_MOVING
 } from './constants.js'
 
-export default {
-  bind(minicrop) {
-    let {
-      image,
-      element,
-      start,
-      offset
-    } = minicrop
+// var editingTimeout
+// var lastStep = 0
 
-    // cropper.addEventListener("gesturestart", event => {
+class Events {
+  constructor(minicrop) {
+    // let {
+    //   image,
+    //   start,
+    //   offset
+    // } = minicrop
+    this.minicrop = minicrop
+    this.editingTimeout = null
+    this.pointerDistance = 0
+    this.gesturing = false
+
+    this.init()
+  }
+
+  init() {
+    let { image } = this.minicrop
+
+    // image.addEventListener("gesturestart", event => {
+    //   if (this.gesturing) {
+    //     return
+    //   }
+    //
+    //   this.gesturing = true
+    //
     //   console.log("Gesture start", event)
     //   event.preventDefault()
     // })
     //
-    // cropper.addEventListener("gesturechange", event => {
+    // image.addEventListener("gesturechange", event => {
+    //   if (!this.gesturing) {
+    //     return
+    //   }
+    //
     //   console.log("Gesture change", event)
     //   event.preventDefault()
     // })
     //
-    // cropper.addEventListener("gestureend", event => {
+    // image.addEventListener("gestureend", event => {
+    //   this.gesturing = false
+    //
     //   console.log("Gesture end", event)
     //   event.preventDefault()
-    // })
-
-
-    // cropper.addEventListener(EVENT_WHEEL, (this.onWheel = this.wheel.bind(this)))
+    // });
 
     // if (options.responsive) {
     //   window.addEventListener(EVENT_RESIZE, (this.onResize = this.resize.bind(this)))
     // }
 
 
-    EVENT_POINTER_DOWN.split(" ").forEach(type => {
-      image.addEventListener(type, event => {
-        if (minicrop.disabled) {
-          return
-        }
-
-        minicrop.moving = true
-        element.classList.add("edit")
-
-        let pointer = (event.targetTouches || event.changedTouches || [event])[0]
-        start.x = pointer['clientX'] - offset.x
-        start.y = pointer['clientY'] - offset.y
-
-        event.preventDefault()
+    ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
+      .forEach(type => {
+        image.addEventListener(type, this)
       })
-    })
+  }
 
-    EVENT_POINTER_MOVE.split(" ").forEach(type => {
-      image.addEventListener(type, event => {
-        if (minicrop.disabled || !minicrop.moving) {
-          return
-        }
+  cropStart(event) {
+    event.preventDefault()
 
-        let pointer = (event.targetTouches || event.changedTouches || [event])[0]
-        offset.x = pointer['clientX'] - start.x
-        offset.y = pointer['clientY'] - start.y
+    let {
+      start,
+      offset
+    } = this.minicrop
 
-        minicrop.position()
-        event.preventDefault()
-      })
-    })
+    if (this.minicrop.disabled) {
+      return
+    }
 
-    EVENT_POINTER_UP.split(" ").forEach(type => {
-      image.addEventListener(type, event => {
-        minicrop.moving = false
-        element.classList.remove("edit")
+    let pointers = (event.targetTouches || event.changedTouches || [event])
+    if (pointers.length > 1) {
+      this.pointerDistance = this.getPointerDistance(pointers)
 
-        minicrop.position()
-        event.preventDefault()
-      })
-    })
-  },
+      return
+    }
 
-  unbind(element) {
+    this.minicrop.editing(CLASS_MOVING)
+
+    let pointer = pointers[0]
+    start.x = pointer['clientX'] - offset.x
+    start.y = pointer['clientY'] - offset.y
+  }
+
+  cropMove(event) {
+    event.preventDefault()
+
+    let {
+      start,
+      offset
+    } = this.minicrop
+
+    let pointers = (event.targetTouches || event.changedTouches || [event])
+    if (pointers.length > 1) {
+      this.pinch(pointers)
+
+      return
+    }
+
+    if (this.minicrop.disabled || !this.minicrop.moving) {
+      return
+    }
+
+    let pointer = pointers[0]
+    offset.x = pointer['clientX'] - start.x
+    offset.y = pointer['clientY'] - start.y
+
+    this.minicrop.position()
+  }
+
+  cropEnd(event) {
+    this.minicrop.edited(CLASS_MOVING)
+    this.minicrop.position()
+    event.preventDefault()
+  }
+
+  pinch(pointers) {
+    let distance = this.getPointerDistance(pointers)
+    let zoomEvent = new CustomEvent("zoom")
+
+    zoomEvent.deltaY = distance - this.pointerDistance
+
+    this.zoom(zoomEvent)
+    this.pointerDistance = distance
+  }
+
+  zoom(event) {
+    if (this.minicrop.disabled) {
+      return
+    }
+
+    this.minicrop.editing(CLASS_ZOOMING)
+
+    event.preventDefault()
+
+    if (Math.abs(event.deltaY) == 0) {
+      return
+    }
+
+    var direction = event.deltaY > 0 ? 1 : -1
+    var smoothing = 50
+
+    if (event.ctrlKey) {
+      direction *= -1
+      smoothing = 15
+    }
+
+    let delta = direction * Math.log(Math.abs(event.deltaY)) / smoothing
+    let scale = this.minicrop.scale + delta
+
+    this.minicrop.zoom(scale, { x: event.offsetX, y: event.offsetY})
+
+    if (this.editingTimeout) {
+      clearTimeout(this.editingTimeout)
+    }
+
+    this.editingTimeout = setTimeout(() => {
+      this.minicrop.edited(CLASS_ZOOMING)
+    }, 200)
+  }
+
+  getPointerDistance(pointers) {
+    let { clientX: x1, clientY: y1 } = pointers[0]
+    let { clientX: x2, clientY: y2 } = pointers[1]
+
+    let distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
+    return distance
+  }
+
+  handleEvent(event) {
+    if (EVENT_WHEEL.includes(event.type)) {
+      this.zoom(event)
+    }
+
+    if (EVENT_POINTER_DOWN.includes(event.type)) {
+      this.cropStart(event)
+    }
+
+    if (EVENT_POINTER_MOVE.includes(event.type)) {
+      this.cropMove(event)
+    }
+
+    if (EVENT_POINTER_UP.includes(event.type)) {
+      this.cropEnd(event)
+    }
+  }
+
+  // unbind(element) {
     // if (isFunction(options.cropstart)) {
     //   element.removeEventListener(EVENT_CROP_START, options.cropstart)
     // }
@@ -110,5 +225,7 @@ export default {
     // if (options.responsive) {
     //   window.removeEventListener(EVENT_RESIZE, this.onResize)
     // }
-  }
+  // }
 }
+
+export default Events

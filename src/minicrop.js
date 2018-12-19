@@ -6,6 +6,7 @@ import {
   MARGIN,
   EVENT_CROP,
   EVENT_ZOOM,
+  ACTION_CLASSES,
 } from './constants.js'
 
 class Minicrop {
@@ -27,6 +28,7 @@ class Minicrop {
     this.disabled = false
     this.ready = false
     this.moving = false
+    this.zooming = false
 
     this.start  = { x: 0, y: 0 }
     this.offset = { x: 0, y: 0 }
@@ -40,6 +42,16 @@ class Minicrop {
     Events.bind(this)
     // TODO: run position after loading image
     this.position()
+  }
+
+  editing(type) {
+    this[type] = true
+    this.element.classList.add("edit", type)
+  }
+
+  edited(type) {
+    this[type] = false
+    this.element.classList.remove("edit", type, ACTION_CLASSES)
   }
 
   position() {
