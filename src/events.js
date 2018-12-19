@@ -126,40 +126,41 @@ class Events {
   }
 
   pinch(pointers) {
-    let distance = this.getPointerDistance(pointers)
     let zoomEvent = new CustomEvent("zoom")
+    let distance = this.getPointerDistance(pointers)
+    let center = this.getPointersCenter(pointers)
 
     zoomEvent.deltaY = distance - this.pointerDistance
 
-    this.zoom(zoomEvent)
+    this.zoom(zoomEvent, center)
     this.pointerDistance = distance
   }
 
-  zoom(event) {
-    if (this.minicrop.disabled) {
+  zoom(event, location) {
+    event.preventDefault()
+
+    if (this.minicrop.disabled || Math.abs(event.deltaY) == 0) {
       return
     }
 
     this.minicrop.editing(CLASS_ZOOMING)
 
-    event.preventDefault()
-
-    if (Math.abs(event.deltaY) == 0) {
-      return
-    }
-
-    var direction = event.deltaY > 0 ? 1 : -1
+    // Scrolling up zooms out, scrolling down zooms in
+    var direction = event.deltaY > 0 ? -1 : 1
     var smoothing = 50
 
     if (event.ctrlKey) {
-      direction *= -1
       smoothing = 15
+    }
+
+    if (!location) {
+      location = { x: event.offsetX, y: event.offsetY }
     }
 
     let delta = direction * Math.log(Math.abs(event.deltaY)) / smoothing
     let scale = this.minicrop.scale + delta
 
-    this.minicrop.zoom(scale, { x: event.offsetX, y: event.offsetY})
+    this.minicrop.zoom(scale, location)
 
     if (this.editingTimeout) {
       clearTimeout(this.editingTimeout)
@@ -176,6 +177,26 @@ class Events {
 
     let distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
     return distance
+  }
+
+  getPointersCenter(pointers) {
+    let x = 0
+    let y = 0
+    let count = 0
+
+    pointers.forEach(({ clientX, clientY }) => {
+      x += clientX
+      y += clientY
+      count += 1
+    })
+
+    x /= count
+    y /= count
+
+    return {
+      x,
+      y,
+    }
   }
 
   handleEvent(event) {

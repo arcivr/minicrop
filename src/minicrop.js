@@ -39,9 +39,14 @@ class Minicrop {
   init() {
     // this.load(url);
 
-    Events.bind(this)
+    // Events.bind(this)
+    new Events(this)
     // TODO: run position after loading image
     this.position()
+
+    let dot = document.createElement("div")
+    dot.classList.add("debug-dot")
+    this.cropper.appendChild(dot)
   }
 
   editing(type) {
@@ -66,14 +71,25 @@ class Minicrop {
     element.dispatchEvent(cropEvent)
   }
 
-  zoom(scale) {
+  zoom(scale, location) {
     let { image, element } = this
 
     this.scale = scale
     this.scale = Constrain.zoom(this)
 
-    image.style.width  = `${ image.originalWidth  * this.scale }px`
-    image.style.height = `${ image.originalHeight * this.scale }px`
+    let newWidth  = image.originalWidth  * this.scale
+    let newHeight = image.originalHeight * this.scale
+
+    if (location) {
+      this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
+      this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight)
+    } else {
+      this.offset.y -= (newHeight - image.offsetHeight) / 2
+      this.offset.x -= (newWidth - image.offsetWidth)   / 2
+    }
+
+    image.style.width  = `${ newWidth  }px`
+    image.style.height = `${ newHeight }px`
 
     let zoomEvent = new CustomEvent(EVENT_ZOOM, { detail: { zoom: this.scale } })
     element.dispatchEvent(zoomEvent)
