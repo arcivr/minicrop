@@ -2,14 +2,10 @@ import {
   EVENT_POINTER_DOWN,
   EVENT_POINTER_MOVE,
   EVENT_POINTER_UP,
-  EVENT_GESTURE_DOWN,
-  EVENT_GESTURE_MOVE,
-  EVENT_GESTURE_UP,
   EVENT_RESIZE,
   EVENT_WHEEL,
   CLASS_ZOOMING,
-  CLASS_MOVING,
-  CLASS_GESTURING
+  CLASS_MOVING
 } from './constants.js'
 
 class Events {
@@ -17,7 +13,6 @@ class Events {
     this.minicrop = minicrop
     this.editingTimeout = null
     this.pointerOffset = 0
-    this.gesturing = false
 
     this.bind()
   }
@@ -29,7 +24,7 @@ class Events {
     //   window.addEventListener(EVENT_RESIZE, (this.onResize = this.resize.bind(this)))
     // }
 
-    ;[EVENT_GESTURE_DOWN, EVENT_GESTURE_MOVE, EVENT_GESTURE_UP, EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
+    ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
       .forEach(type => {
         image.addEventListener(type, this)
       })
@@ -38,7 +33,7 @@ class Events {
   unbind() {
     let { image } = this.minicrop
 
-    ;[EVENT_GESTURE_DOWN, EVENT_GESTURE_MOVE, EVENT_GESTURE_UP, EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
+    ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
       .forEach(type => {
         image.removeEventListener(type, this)
       })
@@ -72,7 +67,7 @@ class Events {
   dragMove(event) {
     event.preventDefault()
 
-    if (this.minicrop.disabled || this.minicrop.gesturing) {
+    if (this.minicrop.disabled) {
       return
     }
 
@@ -151,37 +146,6 @@ class Events {
     }, 200)
   }
 
-  // Gesturing
-
-  gestureStart(event) {
-    event.preventDefault()
-
-    if (this.minicrop.disabled) {
-      return
-    }
-
-    this.minicrop.editing(CLASS_GESTURING)
-    this.pointerOffset = event.scale / 10
-  }
-
-  gestureMove(event) {
-    event.preventDefault()
-
-    if (this.minicrop.disabled || !this.minicrop.gesturing) {
-      return
-    }
-
-    let scale = event.scale / 10
-    let center = { x: event.clientX * this.minicrop.scale, y: event.clientY * this.minicrop.scale }
-    this.pinch(null, scale, center)
-  }
-
-  gestureEnd(event) {
-    this.minicrop.edited(CLASS_GESTURING)
-    this.minicrop.position()
-    event.preventDefault()
-  }
-
   // Utilities
 
   getPointerDistance(pointers) {
@@ -227,18 +191,6 @@ class Events {
 
     if (EVENT_POINTER_UP.includes(event.type)) {
       this.dragEnd(event)
-    }
-
-    if (EVENT_GESTURE_DOWN.includes(event.type)) {
-      this.gestureStart(event)
-    }
-
-    if (EVENT_GESTURE_MOVE.includes(event.type)) {
-      this.gestureMove(event)
-    }
-
-    if (EVENT_GESTURE_UP.includes(event.type)) {
-      this.gestureEnd(event)
     }
   }
 }

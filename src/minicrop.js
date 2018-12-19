@@ -29,7 +29,6 @@ class Minicrop {
     this.ready = false
     this.moving = false
     this.zooming = false
-    this.gesturing = false
 
     this.start  = { x: 0, y: 0 }
     this.offset = { x: 0, y: 0 }
