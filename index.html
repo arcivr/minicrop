@@ -122,14 +122,10 @@
     <script type="module">
       import Minicrop from './src/minicrop.js'
 
-      var zoom = 1
-
       document.getElementsByClassName('zoom-in')[0].addEventListener('click', function(e) {
         e.preventDefault()
 
-        zoom += 0.05
-
-        let event = new CustomEvent('test-zoom', { detail: zoom })
+        let event = new CustomEvent('test-zoom', { detail: 0.05 })
         Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
           el.dispatchEvent(event)
         })
@@ -138,9 +134,7 @@
       document.getElementsByClassName('zoom-out')[0].addEventListener('click', function(e) {
         e.preventDefault()
 
-        zoom -= 0.05
-
-        let event = new CustomEvent('test-zoom', { detail: zoom })
+        let event = new CustomEvent('test-zoom', { detail: -0.05 })
         Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
           el.dispatchEvent(event)
         })
@@ -150,7 +144,7 @@
         el.addEventListener('click', function(e) {
           e.preventDefault()
 
-          let event = new CustomEvent('test-zoom', { detail: this.dataset.zoom })
+          let event = new CustomEvent('test-zoom-to', { detail: this.dataset.zoom })
           Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
             el.dispatchEvent(event)
           })
@@ -162,6 +156,10 @@
 
         el.addEventListener('test-zoom', function(e) {
           this.cropper.zoom(e.detail)
+        })
+
+        el.addEventListener('test-zoom-to', function(e) {
+          this.cropper.zoomTo(e.detail)
         })
 
         el.addEventListener('crop', function(e) {

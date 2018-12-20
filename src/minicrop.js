@@ -69,6 +69,10 @@ class Minicrop {
   }
 
   zoom(scale, location) {
+    this.zoomTo(this.scale + scale, location)
+  }
+
+  zoomTo(scale, location) {
     let { image, element } = this
 
     this.scale = scale
@@ -81,8 +85,8 @@ class Minicrop {
       this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
       this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight)
     } else {
-      this.offset.y -= (newHeight - image.offsetHeight) / 2
       this.offset.x -= (newWidth - image.offsetWidth)   / 2
+      this.offset.y -= (newHeight - image.offsetHeight) / 2
     }
 
     image.style.width  = `${ newWidth  }px`

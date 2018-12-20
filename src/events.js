@@ -13,6 +13,7 @@ class Events {
     this.minicrop = minicrop
     this.editingTimeout = null
     this.pointerOffset = 0
+    this.maxZoomStep = 300
 
     this.bind()
   }
@@ -20,9 +21,7 @@ class Events {
   bind() {
     let { element } = this.minicrop
 
-    // if (options.responsive) {
     window.addEventListener(EVENT_RESIZE, this)
-    // }
 
     ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
       .forEach(type => {
@@ -31,11 +30,13 @@ class Events {
   }
 
   unbind() {
-    let { image } = this.minicrop
+    let { element } = this.minicrop
+
+    window.removeEventListener(EVENT_RESIZE, this)
 
     ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
       .forEach(type => {
-        image.removeEventListener(type, this)
+        element.removeEventListener(type, this)
       })
   }
 
@@ -112,8 +113,9 @@ class Events {
 
   zoom(event, center) {
     event.preventDefault()
+    let step = Math.min(Math.abs(event.deltaY), this.maxZoomStep)
 
-    if (this.minicrop.disabled || Math.abs(event.deltaY) == 0) {
+    if (this.minicrop.disabled || step <= .1) {
       return
     }
 
@@ -121,20 +123,18 @@ class Events {
 
     // Scrolling up zooms out, scrolling down zooms in
     var direction = event.deltaY > 0 ? -1 : 1
-    var smoothing = 50
+    var smoothing = this.maxZoomStep
 
     if (event.ctrlKey) {
-      smoothing = 15
+      smoothing /= 3
     }
 
     if (!center) {
       center = { x: event.offsetX, y: event.offsetY }
     }
 
-    let delta = direction * Math.log(Math.abs(event.deltaY)) / smoothing
-    let scale = this.minicrop.scale + delta
-
-    this.minicrop.zoom(scale, center)
+    let delta = direction * step / smoothing
+    this.minicrop.zoom(delta, center)
 
     if (this.editingTimeout) {
       clearTimeout(this.editingTimeout)
