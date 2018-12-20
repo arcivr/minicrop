@@ -96,7 +96,7 @@ const zoom = (minicrop) => {
   let state = imageState(minicrop, scale)
 
   scale = Math.min(scale, ZOOM_MAXIMUM)
-
+  
   // Only allow zoom out until fitting the longest size, centering.
   if (state.fitted) {
     scale = state.minFitRatio

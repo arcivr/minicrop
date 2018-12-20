@@ -20,8 +20,6 @@ class Minicrop {
 
     this.cropper = element.getElementsByClassName('crop')[0]
     this.image   = element.getElementsByClassName('image')[0]
-    this.image.originalWidth  = this.image.offsetWidth
-    this.image.originalHeight = this.image.offsetHeight
 
     // this.options = assign({}, DEFAULTS, isPlainObject(options) && options);
     this.disabled = false
@@ -39,6 +37,11 @@ class Minicrop {
 
   init() {
     this.image.addEventListener("load", () => {
+      this.image.originalWidth  = this.image.offsetWidth
+      this.image.originalHeight = this.image.offsetHeight
+
+      this.ready = true
+
       this.position()
       this.resize()
     })
@@ -47,6 +50,10 @@ class Minicrop {
   }
 
   editing(type) {
+    if (!this.ready) {
+      return
+    }
+
     this[type] = true
     this.element.classList.add("edit", type)
   }
@@ -57,7 +64,11 @@ class Minicrop {
   }
 
   position() {
-    let { image, element } = this
+    let { image, element, ready } = this
+
+    if (!ready) {
+      return
+    }
 
     this.offset = Constrain.move(this)
 
@@ -73,7 +84,11 @@ class Minicrop {
   }
 
   zoomTo(scale, location) {
-    let { image, element } = this
+    let { image, element, ready } = this
+
+    if (!ready) {
+      return
+    }
 
     this.scale = scale
     this.scale = Constrain.zoom(this)

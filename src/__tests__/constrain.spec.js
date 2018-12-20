@@ -146,7 +146,7 @@ describe("imageState", () => {
     })
 
     test("not portrait", () => {
-      let state = imageState({ image: { offsetHeight: 10, originalWidth: 100 }, cropper })
+      let state = imageState({ image: { originalHeight: 10, originalWidth: 100 }, cropper })
       expect(state.portrait).toEqual(false)
     })
   })

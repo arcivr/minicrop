@@ -134,6 +134,7 @@ class Events {
     }
 
     let delta = direction * step / smoothing
+
     this.minicrop.zoom(delta, center)
 
     if (this.editingTimeout) {
