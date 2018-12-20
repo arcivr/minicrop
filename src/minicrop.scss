@@ -1,12 +1,12 @@
 $z-image: 1;
-$z-overlay: 2;
-$z-crop: 3;
+$z-crop: 2;
 $crop-margin: 40px;
 $crop-fade-preview: rgba(55, 55, 75, 0.7);
 $crop-fade-edit:    rgba(55, 55, 75, 0.2);
 $transition-delay: 250ms;
 $preview-duration: 750ms;
 $edit-duration: 100ms;
+$white: #FFFFFF;
 
 .minicrop {
   display: block;
@@ -14,11 +14,10 @@ $edit-duration: 100ms;
   width: 100%;
   overflow: hidden;
 
-  background: #FFFFFF;
+  background: $white;
 
   transform: translateZ(0);
 
-  // &:hover,
   &.edit {
     .crop {
       outline-color: $crop-fade-edit;
@@ -31,7 +30,6 @@ $edit-duration: 100ms;
     position: absolute;
     top: 0;
     left: 0;
-    // transform: scale(0.86);
 
     z-index: $z-image;
 
@@ -46,7 +44,7 @@ $edit-duration: 100ms;
 
     position: absolute;
     overflow: hidden;
-    border: 2px solid #FFFFFF;
+    border: 2px solid $white;
     outline: $crop-margin * 2 solid $crop-fade-preview;
 
     pointer-events: none;

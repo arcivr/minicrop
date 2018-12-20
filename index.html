@@ -64,7 +64,7 @@
     }
     </style>
 
-    <link rel="stylesheet" href="dist/minicrop.scss">
+    <link rel="stylesheet" href="minicrop.scss">
   </head>
   <body>
     <h1>Test Cases</h1>
@@ -82,8 +82,8 @@
       <li class="zoom" data-zoom="0.65">0.65</li>
     </ul>
     <pre class="debug"></pre>
-    <div class="minicrop" data-image="./tests/fixtures/landscape.jpg" data-ratio="0.8"></div>
-    <img src="./tests/fixtures/landscape.jpg" class="debug-preview">
+    <div class="minicrop" data-image="./dist/landscape.jpg" data-ratio="0.8"></div>
+    <img src="./dist/landscape.jpg" class="debug-preview">
 
     <h3>Zoomed</h3>
     <p>
@@ -91,8 +91,8 @@
     </p>
 
     <pre class="debug"></pre>
-    <div class="minicrop all-directions" data-image="./tests/fixtures/landscape.jpg" data-ratio="0.666" data-zoom="150%"></div>
-    <img src="./tests/fixtures/landscape.jpg" class="debug-preview">
+    <div class="minicrop all-directions" data-image="./dist/landscape.jpg" data-ratio="0.666" data-zoom="150%"></div>
+    <img src="./dist/landscape.jpg" class="debug-preview">
 
     <h3>Centered vertically in canvas.</h3>
     <p>
@@ -100,8 +100,8 @@
     </p>
 
     <pre class="debug"></pre>
-    <div class="minicrop padded" data-image="./tests/fixtures/landscape.jpg" data-zoom="70%"></div>
-    <img src="./tests/fixtures/landscape.jpg" class="debug-preview">
+    <div class="minicrop padded" data-image="./dist/landscape.jpg" data-zoom="70%"></div>
+    <img src="./dist/landscape.jpg" class="debug-preview">
 
     <h3>Centered horizontally in canvas.</h3>
     <p>
@@ -109,8 +109,8 @@
     </p>
 
     <pre class="debug"></pre>
-    <div class="minicrop padded" data-image="./tests/fixtures/portrait.jpg" data-zoom="120%"></div>
-    <img src="./tests/fixtures/landscape.jpg" class="debug-preview">
+    <div class="minicrop padded" data-image="./dist/portrait.jpg" data-zoom="120%"></div>
+    <img src="./dist/landscape.jpg" class="debug-preview">
 
     <script type="module">
       import Minicrop from './src/minicrop.js'

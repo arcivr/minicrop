@@ -1,6 +1,5 @@
 let browserSync = require('browser-sync').create()
 let sass = require('sass')
-// var fs = require('fs')
 
 /**
  * Run the middleware on files that contain .scss
@@ -13,8 +12,6 @@ function sassMiddleware(req, res, next) {
 
     res.setHeader('Content-Type', 'text/css')
     res.end(rendered.css)
-
-    // fs.writeFile("dist/" + parsed.pathname.split('/').pop(), rendered.css, function() {})
   }
   next()
 }
@@ -25,8 +22,7 @@ function sassMiddleware(req, res, next) {
 function scss(src) {
   let file = src.split('/').pop()
   return  sass.renderSync({
-    file: "src/" + file,
-    // outFile: "dist/" + file
+    file: "src/" + file
   })
 }
 

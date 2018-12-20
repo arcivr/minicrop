@@ -134,7 +134,6 @@ class Events {
     if (!center) {
       center = { x: event.offsetX, y: event.offsetY }
     }
-    console.log(center)
 
     let delta = direction * step / smoothing
 
@@ -156,7 +155,7 @@ class Events {
     let { clientX: x2, clientY: y2 } = pointers[1]
 
     let distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
-    return distance
+    return distance * 2
   }
 
   getPointersCenter(pointers) {
@@ -177,23 +176,13 @@ class Events {
     x /= count
     y /= count
 
-    let ratio = (this.minicrop.image.naturalWidth / this.minicrop.image.offsetWidth)
-    console.log("pinch", x * ratio, y * ratio)
     return {
-      x: x * ratio,
-      y: y * ratio,
+      x,
+      y
     }
   }
 
   handleEvent(event) {
-    let pointers = (event.targetTouches || event.changedTouches || [event])
-    var points = []
-    Array.from(pointers).forEach((pointer) => {
-      let { clientX, clientY } = Constrain.coordinates(pointer, this.minicrop.element)
-      points.push({ x: clientX, y: clientY })
-    })
-    // console.log(points)
-
     if (EVENT_RESIZE.includes(event.type)) {
       this.minicrop.resize(event)
     }
