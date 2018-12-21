@@ -96,7 +96,7 @@ const zoom = (minicrop) => {
   let state = imageState(minicrop, scale)
 
   scale = Math.min(scale, ZOOM_MAXIMUM)
-  
+
   // Only allow zoom out until fitting the longest size, centering.
   if (state.fitted) {
     scale = state.minFitRatio
@@ -105,8 +105,18 @@ const zoom = (minicrop) => {
   return scale
 }
 
+const coordinates = ({ clientX, clientY }, element) => {
+  let { top, left } = element.getBoundingClientRect()
+  
+  return {
+    clientX: Math.max(clientX - left, 0),
+    clientY: Math.max(clientY - top, 0)
+  }
+}
+
 export default {
   move,
   zoom,
-  imageState
+  imageState,
+  coordinates
 }

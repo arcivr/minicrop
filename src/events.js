@@ -8,6 +8,8 @@ import {
   CLASS_MOVING
 } from './constants.js'
 
+import Constrain from './constrain.js'
+
 class Events {
   constructor(minicrop) {
     this.minicrop = minicrop
@@ -23,7 +25,7 @@ class Events {
 
     window.addEventListener(EVENT_RESIZE, this)
 
-    ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
+    Array(EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP).join(" ").split(" ")
       .forEach(type => {
         element.addEventListener(type, this)
       })
@@ -34,7 +36,7 @@ class Events {
 
     window.removeEventListener(EVENT_RESIZE, this)
 
-    ;[EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP].join(" ").split(" ")
+    Array(EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP).join(" ").split(" ")
       .forEach(type => {
         element.removeEventListener(type, this)
       })
@@ -105,7 +107,7 @@ class Events {
     center = center || this.getPointersCenter(pointers)
 
     let zoomEvent = new CustomEvent("zoom")
-    zoomEvent.deltaY = scale - this.pointerOffset
+    zoomEvent.deltaY = -1 * (scale - this.pointerOffset)
 
     this.zoom(zoomEvent, center)
     this.pointerOffset = scale
@@ -132,6 +134,7 @@ class Events {
     if (!center) {
       center = { x: event.offsetX, y: event.offsetY }
     }
+    console.log(center)
 
     let delta = direction * step / smoothing
 
@@ -157,11 +160,15 @@ class Events {
   }
 
   getPointersCenter(pointers) {
+    let { image } = this.minicrop
+    
     let x = 0
     let y = 0
     let count = 0
 
-    Array.from(pointers).forEach(({ clientX, clientY }) => {
+    Array.from(pointers).forEach((pointer) => {
+      let { clientX, clientY } = Constrain.coordinates(pointer, image)
+
       x += clientX
       y += clientY
       count += 1
@@ -170,13 +177,23 @@ class Events {
     x /= count
     y /= count
 
+    let ratio = (this.minicrop.image.naturalWidth / this.minicrop.image.offsetWidth)
+    console.log("pinch", x * ratio, y * ratio)
     return {
-      x,
-      y,
+      x: x * ratio,
+      y: y * ratio,
     }
   }
 
   handleEvent(event) {
+    let pointers = (event.targetTouches || event.changedTouches || [event])
+    var points = []
+    Array.from(pointers).forEach((pointer) => {
+      let { clientX, clientY } = Constrain.coordinates(pointer, this.minicrop.element)
+      points.push({ x: clientX, y: clientY })
+    })
+    // console.log(points)
+
     if (EVENT_RESIZE.includes(event.type)) {
       this.minicrop.resize(event)
     }

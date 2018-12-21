@@ -21,7 +21,6 @@ class Minicrop {
     this.cropper = element.getElementsByClassName('crop')[0]
     this.image   = element.getElementsByClassName('image')[0]
 
-    // this.options = assign({}, DEFAULTS, isPlainObject(options) && options);
     this.disabled = false
     this.ready = false
     this.moving = false
