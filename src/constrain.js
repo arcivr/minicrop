@@ -6,14 +6,14 @@ const imageState = (minicrop, scale) => {
   let ratio = scale || minicrop.scale || 1
   let { cropper } = minicrop
 
-  let original = {
-    offsetWidth: minicrop.image.originalWidth,
-    offsetHeight: minicrop.image.originalHeight
+  let natural = {
+    offsetWidth: minicrop.image.naturalWidth,
+    offsetHeight: minicrop.image.naturalHeight
   }
 
   let image = {
-    offsetWidth: original.offsetWidth * ratio,
-    offsetHeight: original.offsetHeight * ratio
+    offsetWidth: natural.offsetWidth * ratio,
+    offsetHeight: natural.offsetHeight * ratio
   }
 
   let portrait = image.offsetHeight > image.offsetWidth
@@ -39,8 +39,8 @@ const imageState = (minicrop, scale) => {
     portrait,
     padRatio,
     fitRatio,
-    minPadRatio: cropper[shortSide] / original[shortSide],
-    minFitRatio: cropper[longSide] / original[longSide],
+    minPadRatio: cropper[shortSide] / natural[shortSide],
+    minFitRatio: cropper[longSide] / natural[longSide],
     padded: padRatio <= 1,
     fitted: fitRatio <= 1
   }
@@ -50,9 +50,8 @@ const move = (minicrop) => {
   let { image, cropper, offset: movement } = minicrop
 
   let scale = minicrop.scale || 1
-  let imageHeight = image.originalHeight * scale
-  let imageWidth  = image.originalWidth * scale
-
+  let imageHeight = image.naturalHeight * scale
+  let imageWidth  = image.naturalWidth * scale
 
   // Restrict top
   if (movement.y > cropper.offsetTop) {
@@ -107,7 +106,7 @@ const zoom = (minicrop) => {
 
 const coordinates = ({ clientX, clientY }, element) => {
   let { top, left } = element.getBoundingClientRect()
-  
+
   return {
     clientX: Math.max(clientX - left, 0),
     clientY: Math.max(clientY - top, 0)

@@ -8,8 +8,8 @@ describe("move", () => {
     offsetLeft: 0,
     offsetHeight: 1000,
     offsetWidth: 2000,
-    originalHeight: 1000,
-    originalWidth: 2000,
+    naturalHeight: 1000,
+    naturalWidth: 2000,
     style: {}
   }
 
@@ -78,8 +78,8 @@ describe("zoom", () => {
   const image = {
     offsetTop: 0,
     offsetLeft: 0,
-    originalHeight: 1000,
-    originalWidth: 2000,
+    naturalHeight: 1000,
+    naturalWidth: 2000,
     style: {}
   }
 
@@ -136,17 +136,17 @@ describe("zoom", () => {
 describe("imageState", () => {
   const { imageState } = Constrain.default
 
-  let image = { originalHeight: 1000, originalWidth: 1000 }
+  let image = { naturalHeight: 1000, naturalWidth: 1000 }
   let cropper = {}
 
   describe("portrait", () => {
     test("portrait", () => {
-      let state = imageState({ image: { originalHeight: 100, originalWidth: 10 }, cropper })
+      let state = imageState({ image: { naturalHeight: 100, naturalWidth: 10 }, cropper })
       expect(state.portrait).toEqual(true)
     })
 
     test("not portrait", () => {
-      let state = imageState({ image: { originalHeight: 10, originalWidth: 100 }, cropper })
+      let state = imageState({ image: { naturalHeight: 10, naturalWidth: 100 }, cropper })
       expect(state.portrait).toEqual(false)
     })
   })
@@ -163,7 +163,7 @@ describe("imageState", () => {
     })
 
     test("padded width", () => {
-      let state = imageState({ image: { originalHeight: 1000, originalWidth: 10 }, cropper: { offsetWidth: 2000 } })
+      let state = imageState({ image: { naturalHeight: 1000, naturalWidth: 10 }, cropper: { offsetWidth: 2000 } })
       expect(state.padded).toEqual(true)
     })
   })
@@ -192,7 +192,7 @@ describe("imageState", () => {
     })
 
     test("padded width", () => {
-      let state = imageState({ image: { originalHeight: 2000, originalWidth: 1000 }, cropper: { offsetWidth: 2000 } })
+      let state = imageState({ image: { naturalHeight: 2000, naturalWidth: 1000 }, cropper: { offsetWidth: 2000 } })
       expect(state.padRatio).toEqual(0.5)
     })
   })

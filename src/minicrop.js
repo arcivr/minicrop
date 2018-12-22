@@ -6,6 +6,7 @@ import {
   MARGIN,
   EVENT_CROP,
   EVENT_ZOOM,
+  EVENT_READY,
   ACTION_CLASSES,
 } from './constants.js'
 
@@ -18,15 +19,14 @@ class Minicrop {
 
     this.element = Structure.build(element)
 
-    this.cropper = element.getElementsByClassName('crop')[0]
-    this.image   = element.getElementsByClassName('image')[0]
+    this.cropper = this.element.getElementsByClassName('crop')[0]
+    this.image   = this.element.getElementsByClassName('image')[0]
 
     this.disabled = false
     this.ready = false
     this.moving = false
     this.zooming = false
 
-    this.start  = { x: 0, y: 0 }
     this.offset = { x: 0, y: 0 }
     this.scale = 1
     this.ratio = this.element.dataset.ratio || 1
@@ -36,10 +36,10 @@ class Minicrop {
 
   init() {
     this.image.addEventListener("load", () => {
-      this.image.originalWidth  = this.image.offsetWidth
-      this.image.originalHeight = this.image.offsetHeight
+      this.scale = this.image.offsetWidth / this.image.naturalWidth || 1
 
       this.ready = true
+      this.element.dispatchEvent(new CustomEvent(EVENT_READY))
 
       this.position()
       this.resize()
@@ -92,8 +92,8 @@ class Minicrop {
     this.scale = scale
     this.scale = Constrain.zoom(this)
 
-    let newWidth  = image.originalWidth  * this.scale
-    let newHeight = image.originalHeight * this.scale
+    let newWidth  = image.naturalWidth  * this.scale
+    let newHeight = image.naturalHeight * this.scale
 
     if (location) {
       this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
