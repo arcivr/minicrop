@@ -115,7 +115,7 @@ class Events {
 
   zoom(event, center) {
     event.preventDefault()
-    let step = Math.min(Math.abs(event.deltaY), this.maxZoomStep)
+    let step = Math.min(Math.abs(event.deltaY), 300)
 
     if (this.minicrop.disabled || step <= .1) {
       return

@@ -113,11 +113,36 @@ class Minicrop {
   }
 
   resize(ratio) {
-    this.ratio = ratio || this.ratio || 1
+    if (typeof ratio === "number") {
+      this.ratio = ratio || 1
+    }
 
     let { element } = this
 
-    element.style.height = `${ element.offsetWidth * this.ratio }px`
+    element.style.height = `${ ((element.offsetWidth - MARGIN * 2) * this.ratio) + MARGIN * 2 }px`
+
+    this.position()
+  }
+
+  setCrop(input) {
+    let {
+      x,
+      y,
+      height,
+      width,
+      scale
+    } = input
+
+    this.resize(height / width)
+
+    let zoom = this.cropper.offsetHeight / height || scale
+    this.zoomTo(zoom)
+
+    let ratio = (this.image.naturalWidth / this.image.offsetWidth) || 1
+    this.offset = {
+      x: (x / ratio) + MARGIN,
+      y: (y / ratio) + MARGIN
+    }
 
     this.position()
   }
@@ -125,12 +150,14 @@ class Minicrop {
   crop() {
     const { image, cropper } = this
 
+    let ratio = (image.naturalWidth / image.offsetWidth) || 1
+
     return {
-      x: image.offsetLeft - MARGIN,
-      y: image.offsetTop - MARGIN,
-      width: cropper.offsetWidth,
-      height: cropper.offsetHeight,
-      ratio: (image.naturalWidth / image.offsetWidth) || 1
+      x: (image.offsetLeft - MARGIN) * ratio,
+      y: (image.offsetTop - MARGIN) * ratio,
+      width: cropper.offsetWidth * ratio,
+      height: cropper.offsetHeight * ratio,
+      scale: this.scale
     }
   }
 }

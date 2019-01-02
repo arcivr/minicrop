@@ -71,15 +71,7 @@
     <ul class="zoom-level">
       <li class="zoom-in">+</li>
       <li class="zoom-out">-</li>
-      <li class="zoom" data-zoom="2.0">2.0</li>
-      <li class="zoom" data-zoom="1.0">1.0</li>
-      <li class="zoom" data-zoom="0.95">0.95</li>
-      <li class="zoom" data-zoom="0.90">0.90</li>
-      <li class="zoom" data-zoom="0.85">0.85</li>
-      <li class="zoom" data-zoom="0.80">0.80</li>
-      <li class="zoom" data-zoom="0.75">0.75</li>
-      <li class="zoom" data-zoom="0.70">0.70</li>
-      <li class="zoom" data-zoom="0.65">0.65</li>
+      <li class="zoom load" data-crop='{ "x": -2314.561354019746, "y": -835.9717912552891, "width": 1270.070521861777, "height": 714.6516220028209, "scale": 0.5275297619047628 }'>Load</li>
     </ul>
     <pre class="debug"></pre>
     <div class="minicrop" data-image="./dist/landscape.jpg" data-ratio="0.8"></div>
@@ -91,7 +83,7 @@
     </p>
 
     <pre class="debug"></pre>
-    <div class="minicrop all-directions" data-image="./dist/landscape.jpg" data-ratio="0.666" data-zoom="150%"></div>
+    <div class="minicrop all-directions" data-image="./dist/landscape.jpg" data-ratio="0.5625" data-zoom="150%"></div>
     <img src="./dist/landscape.jpg" class="debug-preview">
 
     <h3>Centered vertically in canvas.</h3>
@@ -133,11 +125,11 @@
         })
       })
 
-      Array.from(document.getElementsByClassName('zoom')).forEach(el => {
+      Array.from(document.getElementsByClassName('load')).forEach(el => {
         el.addEventListener('click', function(e) {
           e.preventDefault()
 
-          let event = new CustomEvent('test-zoom-to', { detail: this.dataset.zoom })
+          let event = new CustomEvent('load', { detail: JSON.parse(this.dataset.crop) })
           Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
             el.dispatchEvent(event)
           })
@@ -151,20 +143,21 @@
           this.cropper.zoom(e.detail)
         })
 
-        el.addEventListener('test-zoom-to', function(e) {
-          this.cropper.zoomTo(e.detail)
+        el.addEventListener('load', function(e) {
+          this.cropper.setCrop(e.detail)
         })
 
         el.addEventListener('crop', function(e) {
           let crop = e.detail
+          let largeToSmall = 0.1904761905
 
-          let left = Math.round(crop.x * crop.ratio) * -1
-          let top  = Math.round(crop.y * crop.ratio) * -1
+          let left = Math.round(crop.x * largeToSmall) * -1
+          let top  = Math.round(crop.y * largeToSmall) * -1
 
           let x1 = Math.max(left, 0)
           let y1 = Math.max(top, 0)
-          let x2 = Math.round(crop.width * crop.ratio) + x1
-          let y2 = Math.round(crop.height * crop.ratio) + y1
+          let x2 = Math.round(crop.width * largeToSmall) + x1
+          let y2 = Math.round(crop.height * largeToSmall) + y1
 
           let h = Math.round(Math.abs(Math.min(left, 0)) / 2)
           let v = Math.round(Math.abs(Math.min(top, 0)) / 2)
