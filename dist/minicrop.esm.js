@@ -520,13 +520,16 @@ var Minicrop = function () {
     key: 'resize',
     value: function resize(ratio) {
       if (typeof ratio === "number") {
-        this.ratio = ratio || 1;
+        this.ratio = ratio;
       }
 
-      var element = this.element;
+      this.ratio = this.ratio || 1;
+
+      var element = this.element,
+          cropper = this.cropper;
 
 
-      var width = element.offsetWidth - MARGIN * 2;
+      var width = cropper.offsetWidth;
       var height = width * this.ratio + MARGIN * 2;
       element.style.height = height + 'px';
 
