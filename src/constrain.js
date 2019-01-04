@@ -3,7 +3,7 @@ import {
 } from './constants.js'
 
 const imageState = (minicrop, scale) => {
-  let ratio = scale || minicrop.scale || 1
+  let ratio = Math.max(scale || minicrop.scale || 1, 0.000001)
   let { cropper } = minicrop
 
   let natural = {
@@ -91,7 +91,7 @@ const move = (minicrop) => {
 }
 
 const zoom = (minicrop) => {
-  var scale = Math.abs(minicrop.scale || 1)
+  var scale = minicrop.scale || 1
   let state = imageState(minicrop, scale)
 
   scale = Math.min(scale, ZOOM_MAXIMUM)

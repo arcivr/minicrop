@@ -119,8 +119,11 @@ class Minicrop {
 
     let { element } = this
 
-    element.style.height = `${ ((element.offsetWidth - MARGIN * 2) * this.ratio) + MARGIN * 2 }px`
+    let width = element.offsetWidth - MARGIN * 2
+    let height = (width * this.ratio) + MARGIN * 2
+    element.style.height = `${ height }px`
 
+    this.zoomTo(this.scale)
     this.position()
   }
 

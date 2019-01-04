@@ -130,6 +130,11 @@ describe("zoom", () => {
       expect(zoom({ image, cropper, scale: 0.01 }))
         .toEqual(0.25)
     })
+
+    test('negative numbers returns the minimum', () => {
+      expect(zoom({ image, cropper, scale: -0.1 }))
+        .toEqual(0.25)
+    })
   })
 })
 

@@ -74,8 +74,6 @@ class Events {
       return
     }
 
-    let { offset } = this.minicrop
-
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
       this.pinch(pointers)
@@ -87,6 +85,7 @@ class Events {
       return
     }
 
+    let { offset } = this.minicrop
     let pointer = pointers[0]
     offset.x = pointer['clientX'] - this.startOffset.x
     offset.y = pointer['clientY'] - this.startOffset.y
@@ -165,7 +164,7 @@ class Events {
     let y = 0
     let count = 0
 
-    Array.from(pointers).forEach((pointer) => {
+    Array.from(pointers).forEach(pointer => {
       let { clientX, clientY } = Constrain.coordinates(pointer, image)
 
       x += clientX
