@@ -114,12 +114,14 @@ class Minicrop {
 
   resize(ratio) {
     if (typeof ratio === "number") {
-      this.ratio = ratio || 1
+      this.ratio = ratio
     }
 
-    let { element } = this
+    this.ratio = this.ratio || 1
 
-    let width = element.offsetWidth - MARGIN * 2
+    let { element, cropper } = this
+
+    let width = cropper.offsetWidth
     let height = (width * this.ratio) + MARGIN * 2
     element.style.height = `${ height }px`
 
