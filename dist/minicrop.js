@@ -19,22 +19,23 @@
   var EVENT_POINTER_DOWN = 'touchstart mousedown';
   var EVENT_POINTER_MOVE = 'touchmove mousemove';
   var EVENT_POINTER_UP = 'touchend touchcancel mouseup mouseout';
+  var EVENT_READY = 'ready';
   var EVENT_RESIZE = 'resize';
   var EVENT_WHEEL = 'wheel';
 
   var imageState = function imageState(minicrop, scale) {
-    var ratio = scale || minicrop.scale || 1;
+    var ratio = Math.max(scale || minicrop.scale || 1, 0.000001);
     var cropper = minicrop.cropper;
 
 
-    var original = {
-      offsetWidth: minicrop.image.originalWidth,
-      offsetHeight: minicrop.image.originalHeight
+    var natural = {
+      offsetWidth: minicrop.image.naturalWidth,
+      offsetHeight: minicrop.image.naturalHeight
     };
 
     var image = {
-      offsetWidth: original.offsetWidth * ratio,
-      offsetHeight: original.offsetHeight * ratio
+      offsetWidth: natural.offsetWidth * ratio,
+      offsetHeight: natural.offsetHeight * ratio
     };
 
     var portrait = image.offsetHeight > image.offsetWidth;
@@ -60,8 +61,8 @@
       portrait: portrait,
       padRatio: padRatio,
       fitRatio: fitRatio,
-      minPadRatio: cropper[shortSide] / original[shortSide],
-      minFitRatio: cropper[longSide] / original[longSide],
+      minPadRatio: cropper[shortSide] / natural[shortSide],
+      minFitRatio: cropper[longSide] / natural[longSide],
       padded: padRatio <= 1,
       fitted: fitRatio <= 1
     };
@@ -74,8 +75,8 @@
 
 
     var scale = minicrop.scale || 1;
-    var imageHeight = image.originalHeight * scale;
-    var imageWidth = image.originalWidth * scale;
+    var imageHeight = image.naturalHeight * scale;
+    var imageWidth = image.naturalWidth * scale;
 
     // Restrict top
     if (movement.y > cropper.offsetTop) {
@@ -115,7 +116,7 @@
   };
 
   var zoom = function zoom(minicrop) {
-    var scale = Math.abs(minicrop.scale || 1);
+    var scale = minicrop.scale || 1;
     var state = imageState(minicrop, scale);
 
     scale = Math.min(scale, ZOOM_MAXIMUM);
@@ -177,7 +178,7 @@
       this.minicrop = minicrop;
       this.editingTimeout = null;
       this.pointerOffset = 0;
-      this.maxZoomStep = 300;
+      this.startOffset = { x: 0, y: 0 };
 
       this.bind();
     }
@@ -218,9 +219,7 @@
       value: function dragStart(event) {
         event.preventDefault();
 
-        var _minicrop = this.minicrop,
-            start = _minicrop.start,
-            offset = _minicrop.offset;
+        var offset = this.minicrop.offset;
 
 
         if (this.minicrop.disabled) {
@@ -237,8 +236,8 @@
         this.minicrop.editing(CLASS_MOVING);
 
         var pointer = pointers[0];
-        start.x = pointer['clientX'] - offset.x;
-        start.y = pointer['clientY'] - offset.y;
+        this.startOffset.x = pointer['clientX'] - offset.x;
+        this.startOffset.y = pointer['clientY'] - offset.y;
       }
     }, {
       key: 'dragMove',
@@ -248,11 +247,6 @@
         if (this.minicrop.disabled) {
           return;
         }
-
-        var _minicrop2 = this.minicrop,
-            start = _minicrop2.start,
-            offset = _minicrop2.offset;
-
 
         var pointers = event.targetTouches || event.changedTouches || [event];
         if (pointers.length > 1) {
@@ -265,9 +259,11 @@
           return;
         }
 
+        var offset = this.minicrop.offset;
+
         var pointer = pointers[0];
-        offset.x = pointer['clientX'] - start.x;
-        offset.y = pointer['clientY'] - start.y;
+        offset.x = pointer['clientX'] - this.startOffset.x;
+        offset.y = pointer['clientY'] - this.startOffset.y;
 
         this.minicrop.position();
       }
@@ -299,7 +295,7 @@
         var _this3 = this;
 
         event.preventDefault();
-        var step = Math.min(Math.abs(event.deltaY), this.maxZoomStep);
+        var step = Math.min(Math.abs(event.deltaY), 300);
 
         if (this.minicrop.disabled || step <= .1) {
           return;
@@ -309,7 +305,7 @@
 
         // Scrolling up zooms out, scrolling down zooms in
         var direction = event.deltaY > 0 ? -1 : 1;
-        var smoothing = this.maxZoomStep;
+        var smoothing = this.minicrop.image.naturalWidth / 5;
 
         if (event.ctrlKey) {
           smoothing /= 3;
@@ -419,15 +415,14 @@
 
       this.element = Structure.build(element);
 
-      this.cropper = element.getElementsByClassName('crop')[0];
-      this.image = element.getElementsByClassName('image')[0];
+      this.cropper = this.element.getElementsByClassName('crop')[0];
+      this.image = this.element.getElementsByClassName('image')[0];
 
       this.disabled = false;
       this.ready = false;
       this.moving = false;
       this.zooming = false;
 
-      this.start = { x: 0, y: 0 };
       this.offset = { x: 0, y: 0 };
       this.scale = 1;
       this.ratio = this.element.dataset.ratio || 1;
@@ -441,10 +436,10 @@
         var _this = this;
 
         this.image.addEventListener("load", function () {
-          _this.image.originalWidth = _this.image.offsetWidth;
-          _this.image.originalHeight = _this.image.offsetHeight;
+          _this.scale = _this.image.offsetWidth / _this.image.naturalWidth || 1;
 
           _this.ready = true;
+          _this.element.dispatchEvent(new CustomEvent(EVENT_READY));
 
           _this.position();
           _this.resize();
@@ -508,8 +503,8 @@
         this.scale = scale;
         this.scale = Constrain.zoom(this);
 
-        var newWidth = image.originalWidth * this.scale;
-        var newHeight = image.originalHeight * this.scale;
+        var newWidth = image.naturalWidth * this.scale;
+        var newHeight = image.naturalHeight * this.scale;
 
         if (location) {
           this.offset.x -= (newWidth - image.offsetWidth) * (location.x / image.offsetWidth);
@@ -530,12 +525,40 @@
     }, {
       key: 'resize',
       value: function resize(ratio) {
-        this.ratio = ratio || this.ratio || 1;
+        if (typeof ratio === "number") {
+          this.ratio = ratio || 1;
+        }
 
         var element = this.element;
 
 
-        element.style.height = element.offsetWidth * this.ratio + 'px';
+        var width = element.offsetWidth - MARGIN * 2;
+        var height = width * this.ratio + MARGIN * 2;
+        element.style.height = height + 'px';
+
+        this.zoomTo(this.scale);
+        this.position();
+      }
+    }, {
+      key: 'setCrop',
+      value: function setCrop(input) {
+        var x = input.x,
+            y = input.y,
+            height = input.height,
+            width = input.width,
+            scale = input.scale;
+
+
+        this.resize(height / width);
+
+        var zoom = this.cropper.offsetHeight / height || scale;
+        this.zoomTo(zoom);
+
+        var ratio = this.image.naturalWidth / this.image.offsetWidth || 1;
+        this.offset = {
+          x: x / ratio + MARGIN,
+          y: y / ratio + MARGIN
+        };
 
         this.position();
       }
@@ -546,12 +569,14 @@
             cropper = this.cropper;
 
 
+        var ratio = image.naturalWidth / image.offsetWidth || 1;
+
         return {
-          x: image.offsetLeft - MARGIN,
-          y: image.offsetTop - MARGIN,
-          width: cropper.offsetWidth,
-          height: cropper.offsetHeight,
-          ratio: image.naturalWidth / image.offsetWidth || 1
+          x: (image.offsetLeft - MARGIN) * ratio,
+          y: (image.offsetTop - MARGIN) * ratio,
+          width: cropper.offsetWidth * ratio,
+          height: cropper.offsetHeight * ratio,
+          scale: this.scale
         };
       }
     }]);

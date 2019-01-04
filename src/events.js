@@ -15,7 +15,7 @@ class Events {
     this.minicrop = minicrop
     this.editingTimeout = null
     this.pointerOffset = 0
-    this.maxZoomStep = 300
+    this.startOffset = { x: 0, y: 0 }
 
     this.bind()
   }
@@ -47,7 +47,7 @@ class Events {
   dragStart(event) {
     event.preventDefault()
 
-    let { start, offset } = this.minicrop
+    let { offset } = this.minicrop
 
     if (this.minicrop.disabled) {
       return
@@ -63,8 +63,8 @@ class Events {
     this.minicrop.editing(CLASS_MOVING)
 
     let pointer = pointers[0]
-    start.x = pointer['clientX'] - offset.x
-    start.y = pointer['clientY'] - offset.y
+    this.startOffset.x = pointer['clientX'] - offset.x
+    this.startOffset.y = pointer['clientY'] - offset.y
   }
 
   dragMove(event) {
@@ -73,8 +73,6 @@ class Events {
     if (this.minicrop.disabled) {
       return
     }
-
-    let { start, offset } = this.minicrop
 
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
@@ -87,9 +85,10 @@ class Events {
       return
     }
 
+    let { offset } = this.minicrop
     let pointer = pointers[0]
-    offset.x = pointer['clientX'] - start.x
-    offset.y = pointer['clientY'] - start.y
+    offset.x = pointer['clientX'] - this.startOffset.x
+    offset.y = pointer['clientY'] - this.startOffset.y
 
     this.minicrop.position()
   }
@@ -115,7 +114,7 @@ class Events {
 
   zoom(event, center) {
     event.preventDefault()
-    let step = Math.min(Math.abs(event.deltaY), this.maxZoomStep)
+    let step = Math.min(Math.abs(event.deltaY), 300)
 
     if (this.minicrop.disabled || step <= .1) {
       return
@@ -125,7 +124,7 @@ class Events {
 
     // Scrolling up zooms out, scrolling down zooms in
     var direction = event.deltaY > 0 ? -1 : 1
-    var smoothing = this.maxZoomStep
+    var smoothing = this.minicrop.image.naturalWidth / 5
 
     if (event.ctrlKey) {
       smoothing /= 3
@@ -160,12 +159,12 @@ class Events {
 
   getPointersCenter(pointers) {
     let { image } = this.minicrop
-    
+
     let x = 0
     let y = 0
     let count = 0
 
-    Array.from(pointers).forEach((pointer) => {
+    Array.from(pointers).forEach(pointer => {
       let { clientX, clientY } = Constrain.coordinates(pointer, image)
 
       x += clientX

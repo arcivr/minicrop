@@ -1,6 +1,6 @@
 {
   "name": "minicrop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/minicrop.js",
   "module": "dist/minicrop.esm.js",
   "author": "Derek Lucas <d@derekplucas.com>",
@@ -16,8 +16,8 @@
     "babel-jest": "^23.6.0",
     "browser-sync": "^2.26.3",
     "jest": "^23.6.0",
-    "node-sass": "^4.11.0",
     "rollup": "^0.67.4",
-    "rollup-plugin-babel": "3"
+    "rollup-plugin-babel": "3",
+    "sass": "^1.15.2"
   }
 }
