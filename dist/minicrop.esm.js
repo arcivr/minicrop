@@ -517,6 +517,22 @@ var Minicrop = function () {
       this.position();
     }
   }, {
+    key: 'zoomToPadded',
+    value: function zoomToPadded() {
+      var _Constrain$imageState = Constrain.imageState(this),
+          minPadRatio = _Constrain$imageState.minPadRatio;
+
+      this.zoomTo(minPadRatio);
+    }
+  }, {
+    key: 'zoomToFitted',
+    value: function zoomToFitted() {
+      var _Constrain$imageState2 = Constrain.imageState(this),
+          minFitRatio = _Constrain$imageState2.minFitRatio;
+
+      this.zoomTo(minFitRatio);
+    }
+  }, {
     key: 'resize',
     value: function resize(ratio) {
       if (typeof ratio === "number") {
