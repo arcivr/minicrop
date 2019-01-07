@@ -24,7 +24,7 @@
   var EVENT_WHEEL = 'wheel';
 
   var imageState = function imageState(minicrop, scale) {
-    var ratio = Math.max(scale || minicrop.scale || 1, 0.000001);
+    scale = Math.max(scale || minicrop.scale || 1, 0.000001);
     var cropper = minicrop.cropper;
 
 
@@ -34,35 +34,39 @@
     };
 
     var image = {
-      offsetWidth: natural.offsetWidth * ratio,
-      offsetHeight: natural.offsetHeight * ratio
+      offsetWidth: natural.offsetWidth * scale,
+      offsetHeight: natural.offsetHeight * scale
     };
 
     var portrait = image.offsetHeight > image.offsetWidth;
 
-    // TODO: handle this
-    // if (category == "Phone Cases") {
-    //   portrait = this.rotated
-    // }
+    var heightRatio = image.offsetHeight / cropper.offsetHeight;
+    var widthRatio = image.offsetWidth / cropper.offsetWidth;
+    var minHeightRatio = cropper.offsetHeight / natural.offsetHeight;
+    var minWidthRatio = cropper.offsetWidth / natural.offsetWidth;
 
-    var longSide = 'offsetWidth';
-    var shortSide = 'offsetHeight';
+    var ratioPortrait = heightRatio > widthRatio;
 
-    if (portrait) {
-      longSide = 'offsetHeight';
-      shortSide = 'offsetWidth';
+    var padRatio = heightRatio;
+    var fitRatio = widthRatio;
+    var minPadRatio = minHeightRatio;
+    var minFitRatio = minWidthRatio;
+
+    if (ratioPortrait) {
+      padRatio = widthRatio;
+      fitRatio = heightRatio;
+      minPadRatio = minWidthRatio;
+      minFitRatio = minHeightRatio;
     }
 
-    var padRatio = image[shortSide] / cropper[shortSide];
-    var fitRatio = image[longSide] / cropper[longSide];
-
     return {
-      scale: ratio,
+      scale: scale,
       portrait: portrait,
       padRatio: padRatio,
       fitRatio: fitRatio,
-      minPadRatio: cropper[shortSide] / natural[shortSide],
-      minFitRatio: cropper[longSide] / natural[longSide],
+      minPadRatio: minPadRatio,
+      minFitRatio: minFitRatio,
+      ratioPortrait: ratioPortrait,
       padded: padRatio <= 1,
       fitted: fitRatio <= 1
     };
@@ -103,7 +107,7 @@
     // Don't allow dragging photo sides into cropbox, centering short side
     var state = imageState(minicrop);
     if (state.padded) {
-      if (state.portrait) {
+      if (state.ratioPortrait) {
         // Set left to half of margin
         movement.x = cropper.offsetLeft + (cropper.offsetWidth - imageWidth) / 2;
       } else {

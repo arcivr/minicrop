@@ -3,7 +3,7 @@ import {
 } from './constants.js'
 
 const imageState = (minicrop, scale) => {
-  let ratio = Math.max(scale || minicrop.scale || 1, 0.000001)
+  scale = Math.max(scale || minicrop.scale || 1, 0.000001)
   let { cropper } = minicrop
 
   let natural = {
@@ -12,35 +12,39 @@ const imageState = (minicrop, scale) => {
   }
 
   let image = {
-    offsetWidth: natural.offsetWidth * ratio,
-    offsetHeight: natural.offsetHeight * ratio
+    offsetWidth: natural.offsetWidth * scale,
+    offsetHeight: natural.offsetHeight * scale
   }
 
   let portrait = image.offsetHeight > image.offsetWidth
 
-  // TODO: handle this
-  // if (category == "Phone Cases") {
-  //   portrait = this.rotated
-  // }
+  let heightRatio = image.offsetHeight / cropper.offsetHeight
+  let widthRatio = image.offsetWidth / cropper.offsetWidth
+  let minHeightRatio = cropper.offsetHeight / natural.offsetHeight
+  let minWidthRatio = cropper.offsetWidth / natural.offsetWidth
 
-  var longSide = 'offsetWidth'
-  var shortSide = 'offsetHeight'
+  let ratioPortrait =  heightRatio > widthRatio
 
-  if (portrait) {
-    longSide = 'offsetHeight'
-    shortSide = 'offsetWidth'
+  let padRatio = heightRatio
+  let fitRatio = widthRatio
+  let minPadRatio = minHeightRatio
+  let minFitRatio = minWidthRatio
+
+  if (ratioPortrait) {
+    padRatio = widthRatio
+    fitRatio = heightRatio
+    minPadRatio = minWidthRatio
+    minFitRatio = minHeightRatio
   }
 
-  let padRatio = image[shortSide] / cropper[shortSide]
-  let fitRatio = image[longSide] / cropper[longSide]
-
   return {
-    scale: ratio,
+    scale,
     portrait,
     padRatio,
     fitRatio,
-    minPadRatio: cropper[shortSide] / natural[shortSide],
-    minFitRatio: cropper[longSide] / natural[longSide],
+    minPadRatio,
+    minFitRatio,
+    ratioPortrait,
     padded: padRatio <= 1,
     fitted: fitRatio <= 1
   }
@@ -78,7 +82,7 @@ const move = (minicrop) => {
   // Don't allow dragging photo sides into cropbox, centering short side
   let state = imageState(minicrop)
   if (state.padded) {
-    if (state.portrait) {
+    if (state.ratioPortrait) {
       // Set left to half of margin
       movement.x = cropper.offsetLeft + ((cropper.offsetWidth - imageWidth) / 2)
     } else {

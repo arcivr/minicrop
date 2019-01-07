@@ -4,10 +4,6 @@ describe("move", () => {
   const { move } = Constrain.default
 
   const image = {
-    offsetTop: 0,
-    offsetLeft: 0,
-    offsetHeight: 1000,
-    offsetWidth: 2000,
     naturalHeight: 1000,
     naturalWidth: 2000,
     style: {}
@@ -109,30 +105,93 @@ describe("zoom", () => {
   })
 
   describe("padded", () => {
-    test("if zoom larger than padded, return same value", () => {
-      expect(zoom({ image, cropper, scale: 0.75 }))
-        .toEqual(0.75)
+    describe("portrait", () => {
+      const portrait = {
+        offsetTop: 0,
+        offsetLeft: 0,
+        naturalHeight: 2000,
+        naturalWidth: 1000,
+        style: {}
+      }
+
+      test("if zoom larger than padded, return same value", () => {
+        expect(zoom({ image: portrait, cropper, scale: 0.75 }))
+          .toEqual(0.75)
+      })
+
+      test("if zoom smaller than padded, return same value", () => {
+        expect(zoom({ image: portrait, cropper, scale: 0.4 }))
+          .toEqual(0.4)
+      })
     })
 
-    test("if zoom smaller than padded, return same value", () => {
-      expect(zoom({ image, cropper, scale: 0.4 }))
-        .toEqual(0.4)
+    describe("landscape", () => {
+      const landscape = {
+        offsetTop: 0,
+        offsetLeft: 0,
+        naturalHeight: 1000,
+        naturalWidth: 2000,
+        style: {}
+      }
+
+      test("if zoom larger than padded, return same value", () => {
+        expect(zoom({ image: landscape, cropper, scale: 0.75 }))
+          .toEqual(0.75)
+      })
+
+      test("if zoom smaller than padded, return same value", () => {
+        expect(zoom({ image: landscape, cropper, scale: 0.4 }))
+          .toEqual(0.4)
+      })
     })
   })
 
   describe("fitted", () => {
+    describe("portrait", () => {
+      const portrait = {
+        offsetTop: 0,
+        offsetLeft: 0,
+        naturalHeight: 2000,
+        naturalWidth: 1000,
+        style: {}
+      }
+      test("if zoom larger than fitted, return same value", () => {
+        expect(zoom({ image: portrait, cropper, scale: 0.5 }))
+          .toEqual(0.5)
+      })
+
+      test("if zoom smaller than fitted, return minimum fitted scale", () => {
+        expect(zoom({ image: portrait, cropper, scale: 0.01 }))
+          .toEqual(0.25)
+      })
+
+      test('negative numbers returns the minimum', () => {
+        expect(zoom({ image: portrait, cropper, scale: -0.1 }))
+          .toEqual(0.25)
+      })
+    })
+  })
+
+  describe("landscape", () => {
+    const landscape = {
+      offsetTop: 0,
+      offsetLeft: 0,
+      naturalHeight: 2000,
+      naturalWidth: 1000,
+      style: {}
+    }
     test("if zoom larger than fitted, return same value", () => {
-      expect(zoom({ image, cropper, scale: 0.5 }))
+      expect(zoom({ image: landscape, cropper, scale: 0.5 }))
         .toEqual(0.5)
     })
 
     test("if zoom smaller than fitted, return minimum fitted scale", () => {
-      expect(zoom({ image, cropper, scale: 0.01 }))
+      expect(zoom({ image: landscape, cropper, scale: 0.01 }))
         .toEqual(0.25)
     })
 
     test('negative numbers returns the minimum', () => {
-      expect(zoom({ image, cropper, scale: -0.1 }))
+      expect(zoom({ image: landscape, cropper, scale: -0.1 }))
         .toEqual(0.25)
     })
   })
@@ -168,7 +227,7 @@ describe("imageState", () => {
     })
 
     test("padded width", () => {
-      let state = imageState({ image: { naturalHeight: 1000, naturalWidth: 10 }, cropper: { offsetWidth: 2000 } })
+      let state = imageState({ image: { naturalHeight: 1000, naturalWidth: 10 }, cropper: { offsetWidth: 2000, offsetHeight: 1000 } })
       expect(state.padded).toEqual(true)
     })
   })
@@ -197,7 +256,7 @@ describe("imageState", () => {
     })
 
     test("padded width", () => {
-      let state = imageState({ image: { naturalHeight: 2000, naturalWidth: 1000 }, cropper: { offsetWidth: 2000 } })
+      let state = imageState({ image: { naturalHeight: 2000, naturalWidth: 1000 }, cropper: { offsetWidth: 2000, offsetHeight: 1000 } })
       expect(state.padRatio).toEqual(0.5)
     })
   })
