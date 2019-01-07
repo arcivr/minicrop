@@ -133,9 +133,15 @@ class Minicrop {
 
     let { element, cropper } = this
 
+    element.style.width = `auto`
+
     let width = cropper.offsetWidth
     let height = (width * this.ratio) + MARGIN * 2
     element.style.height = `${ height }px`
+
+    height = cropper.offsetHeight
+    width = (height / this.ratio) + MARGIN * 2
+    element.style.width = `${ width }px`
 
     this.zoomTo(this.scale)
     this.position()

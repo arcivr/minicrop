@@ -545,9 +545,15 @@ var Minicrop = function () {
           cropper = this.cropper;
 
 
+      element.style.width = 'auto';
+
       var width = cropper.offsetWidth;
       var height = width * this.ratio + MARGIN * 2;
       element.style.height = height + 'px';
+
+      height = cropper.offsetHeight;
+      width = height / this.ratio + MARGIN * 2;
+      element.style.width = width + 'px';
 
       this.zoomTo(this.scale);
       this.position();
