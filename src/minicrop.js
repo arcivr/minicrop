@@ -112,6 +112,18 @@ class Minicrop {
     this.position()
   }
 
+  zoomToPadded() {
+    let { minPadRatio } = Constrain.imageState(this)
+
+    this.zoomTo(minPadRatio)
+  }
+
+  zoomToFitted() {
+    let { minFitRatio } = Constrain.imageState(this)
+
+    this.zoomTo(minFitRatio)
+  }
+
   resize(ratio) {
     if (typeof ratio === "number") {
       this.ratio = ratio

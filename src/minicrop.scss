@@ -15,6 +15,7 @@ $white: #FFFFFF;
   overflow: hidden;
 
   background: $white;
+  cursor: grab;
 
   transform: translateZ(0);
 
@@ -24,6 +25,10 @@ $white: #FFFFFF;
 
       transition: outline-color $edit-duration ease-in;
     }
+  }
+
+  &.moving {
+    cursor: grabbing;
   }
 
   .image {

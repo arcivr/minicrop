@@ -72,6 +72,8 @@
       <li class="zoom-in">+</li>
       <li class="zoom-out">-</li>
       <li class="zoom load" data-crop='{ "x": -2314.561354019746, "y": -835.9717912552891, "width": 1270.070521861777, "height": 714.6516220028209, "scale": 0.5275297619047628 }'>Load</li>
+      <li class="zoom pad">Pad</li>
+      <li class="zoom fit">Fit</li>
     </ul>
     <pre class="debug"></pre>
     <div class="minicrop" data-image="./dist/landscape.jpg" data-ratio="0.8"></div>
@@ -136,6 +138,28 @@
         })
       })
 
+      Array.from(document.getElementsByClassName('pad')).forEach(el => {
+        el.addEventListener('click', function(e) {
+          e.preventDefault()
+
+          let event = new CustomEvent('pad')
+          Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
+            el.dispatchEvent(event)
+          })
+        })
+      })
+
+      Array.from(document.getElementsByClassName('fit')).forEach(el => {
+        el.addEventListener('click', function(e) {
+          e.preventDefault()
+
+          let event = new CustomEvent('fit')
+          Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
+            el.dispatchEvent(event)
+          })
+        })
+      })
+
       Array.from(document.getElementsByClassName('minicrop')).forEach(el => {
         el.cropper = new Minicrop(el)
 
@@ -145,6 +169,14 @@
 
         el.addEventListener('load', function(e) {
           this.cropper.setCrop(e.detail)
+        })
+
+        el.addEventListener('pad', function(e) {
+          this.cropper.zoomToPadded()
+        })
+
+        el.addEventListener('fit', function(e) {
+          this.cropper.zoomToFitted()
         })
 
         el.addEventListener('crop', function(e) {
