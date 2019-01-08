@@ -84,7 +84,7 @@ class Minicrop {
   }
 
   zoomTo(scale, location) {
-    let { image, element, ready } = this
+    let { image, element, cropper, ready } = this
 
     if (!ready) {
       return
@@ -96,13 +96,18 @@ class Minicrop {
     let newWidth  = image.naturalWidth  * this.scale
     let newHeight = image.naturalHeight * this.scale
 
-    if (location) {
-      this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
-      this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight)
+    if (!location) {
+      location = {
+        x: (-1 * image.offsetLeft) + (cropper.offsetWidth / 2) + MARGIN + 2,
+        y: (-1 * image.offsetTop) + (cropper.offsetHeight / 2) + MARGIN + 2
+      }
+      console.log("no location", location)
     } else {
-      this.offset.x -= (newWidth - image.offsetWidth)   / 2
-      this.offset.y -= (newHeight - image.offsetHeight) / 2
+      console.log("location!", location)
     }
+
+    this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
+    this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight)
 
     image.style.width  = `${ newWidth  }px`
     image.style.height = `${ newHeight }px`
