@@ -114,7 +114,7 @@ class Events {
 
   zoom(event, center) {
     event.preventDefault()
-    let step = Math.min(Math.abs(event.deltaY), 300)
+    let step = Math.min(Math.abs(event.deltaY), 25)
 
     if (this.minicrop.disabled || step <= .1) {
       return
@@ -124,7 +124,7 @@ class Events {
 
     // Scrolling up zooms out, scrolling down zooms in
     var direction = event.deltaY > 0 ? -1 : 1
-    var smoothing = this.minicrop.image.naturalWidth / 5
+    var smoothing = Math.min(this.minicrop.image.offsetWidth, 700)
 
     if (event.ctrlKey) {
       smoothing /= 3
@@ -135,7 +135,6 @@ class Events {
     }
 
     let delta = direction * step / smoothing
-
     this.minicrop.zoom(delta, center)
 
     if (this.editingTimeout) {
