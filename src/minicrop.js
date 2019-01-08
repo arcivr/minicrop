@@ -14,7 +14,7 @@ class Minicrop {
   constructor(element) {
     if (!element) {
       // TODO: actually check element type
-      throw new Error('The first argument is required and must be an <img> element.');
+      throw new Error('The first argument is required and must be an <img> element.')
     }
 
     this.element = Structure.build(element)
@@ -79,11 +79,12 @@ class Minicrop {
   }
 
   zoom(scale, location) {
-    this.zoomTo(this.scale + scale, location)
+    scale = 1 + scale
+    this.zoomTo(this.scale * scale, location)
   }
 
   zoomTo(scale, location) {
-    let { image, element, ready } = this
+    let { image, element, cropper, ready } = this
 
     if (!ready) {
       return
@@ -95,13 +96,18 @@ class Minicrop {
     let newWidth  = image.naturalWidth  * this.scale
     let newHeight = image.naturalHeight * this.scale
 
-    if (location) {
-      this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
-      this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight)
+    if (!location) {
+      location = {
+        x: (-1 * image.offsetLeft) + (cropper.offsetWidth / 2) + MARGIN + 2,
+        y: (-1 * image.offsetTop) + (cropper.offsetHeight / 2) + MARGIN + 2
+      }
+      console.log("no location", location)
     } else {
-      this.offset.x -= (newWidth - image.offsetWidth)   / 2
-      this.offset.y -= (newHeight - image.offsetHeight) / 2
+      console.log("location!", location)
     }
+
+    this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
+    this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight)
 
     image.style.width  = `${ newWidth  }px`
     image.style.height = `${ newHeight }px`
@@ -132,6 +138,7 @@ class Minicrop {
     this.ratio = this.ratio || 1
 
     let { element, cropper } = this
+    const startWidth = cropper.offsetWidth
 
     element.style.width = `auto`
 
@@ -143,8 +150,8 @@ class Minicrop {
     width = (height / this.ratio) + MARGIN * 2
     element.style.width = `${ width }px`
 
-    this.zoomTo(this.scale)
-    this.position()
+    let zoom = cropper.offsetWidth / startWidth
+    this.zoom(zoom - 1)
   }
 
   setCrop(input) {

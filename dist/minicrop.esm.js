@@ -293,7 +293,7 @@ var Events = function () {
       var _this3 = this;
 
       event.preventDefault();
-      var step = Math.min(Math.abs(event.deltaY), 300);
+      var step = Math.min(Math.abs(event.deltaY), 50);
 
       if (this.minicrop.disabled || step <= .1) {
         return;
@@ -303,7 +303,7 @@ var Events = function () {
 
       // Scrolling up zooms out, scrolling down zooms in
       var direction = event.deltaY > 0 ? -1 : 1;
-      var smoothing = this.minicrop.image.naturalWidth / 5;
+      var smoothing = 200;
 
       if (event.ctrlKey) {
         smoothing /= 3;
@@ -314,7 +314,6 @@ var Events = function () {
       }
 
       var delta = direction * step / smoothing;
-
       this.minicrop.zoom(delta, center);
 
       if (this.editingTimeout) {
@@ -484,13 +483,15 @@ var Minicrop = function () {
   }, {
     key: 'zoom',
     value: function zoom(scale, location) {
-      this.zoomTo(this.scale + scale, location);
+      scale = 1 + scale;
+      this.zoomTo(this.scale * scale, location);
     }
   }, {
     key: 'zoomTo',
     value: function zoomTo(scale, location) {
       var image = this.image,
           element = this.element,
+          cropper = this.cropper,
           ready = this.ready;
 
 
@@ -504,13 +505,18 @@ var Minicrop = function () {
       var newWidth = image.naturalWidth * this.scale;
       var newHeight = image.naturalHeight * this.scale;
 
-      if (location) {
-        this.offset.x -= (newWidth - image.offsetWidth) * (location.x / image.offsetWidth);
-        this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight);
+      if (!location) {
+        location = {
+          x: -1 * image.offsetLeft + cropper.offsetWidth / 2 + MARGIN + 2,
+          y: -1 * image.offsetTop + cropper.offsetHeight / 2 + MARGIN + 2
+        };
+        console.log("no location", location);
       } else {
-        this.offset.x -= (newWidth - image.offsetWidth) / 2;
-        this.offset.y -= (newHeight - image.offsetHeight) / 2;
+        console.log("location!", location);
       }
+
+      this.offset.x -= (newWidth - image.offsetWidth) * (location.x / image.offsetWidth);
+      this.offset.y -= (newHeight - image.offsetHeight) * (location.y / image.offsetHeight);
 
       image.style.width = newWidth + 'px';
       image.style.height = newHeight + 'px';
@@ -548,6 +554,7 @@ var Minicrop = function () {
       var element = this.element,
           cropper = this.cropper;
 
+      var startWidth = cropper.offsetWidth;
 
       element.style.width = 'auto';
 
@@ -559,8 +566,8 @@ var Minicrop = function () {
       width = height / this.ratio + MARGIN * 2;
       element.style.width = width + 'px';
 
-      this.zoomTo(this.scale);
-      this.position();
+      var zoom = cropper.offsetWidth / startWidth;
+      this.zoom(zoom - 1);
     }
   }, {
     key: 'setCrop',
