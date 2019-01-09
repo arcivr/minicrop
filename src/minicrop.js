@@ -101,9 +101,6 @@ class Minicrop {
         x: (-1 * image.offsetLeft) + (cropper.offsetWidth / 2) + MARGIN + 2,
         y: (-1 * image.offsetTop) + (cropper.offsetHeight / 2) + MARGIN + 2
       }
-      console.log("no location", location)
-    } else {
-      console.log("location!", location)
     }
 
     this.offset.x -= (newWidth - image.offsetWidth)   * (location.x / image.offsetWidth)
@@ -137,7 +134,7 @@ class Minicrop {
 
     this.ratio = this.ratio || 1
 
-    let { element, cropper } = this
+    let { element, cropper, image } = this
     const startWidth = cropper.offsetWidth
 
     element.style.width = `auto`
@@ -150,8 +147,13 @@ class Minicrop {
     width = (height / this.ratio) + MARGIN * 2
     element.style.width = `${ width }px`
 
+    let location = {
+      x: (-1 * image.offsetLeft) + MARGIN,
+      y: (-1 * image.offsetTop) + MARGIN
+    }
+
     let zoom = cropper.offsetWidth / startWidth
-    this.zoom(zoom - 1)
+    this.zoom(zoom - 1, location)
   }
 
   setCrop(input) {
