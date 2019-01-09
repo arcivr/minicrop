@@ -510,9 +510,6 @@ var Minicrop = function () {
           x: -1 * image.offsetLeft + cropper.offsetWidth / 2 + MARGIN + 2,
           y: -1 * image.offsetTop + cropper.offsetHeight / 2 + MARGIN + 2
         };
-        console.log("no location", location);
-      } else {
-        console.log("location!", location);
       }
 
       this.offset.x -= (newWidth - image.offsetWidth) * (location.x / image.offsetWidth);
@@ -552,7 +549,8 @@ var Minicrop = function () {
       this.ratio = this.ratio || 1;
 
       var element = this.element,
-          cropper = this.cropper;
+          cropper = this.cropper,
+          image = this.image;
 
       var startWidth = cropper.offsetWidth;
 
@@ -566,8 +564,13 @@ var Minicrop = function () {
       width = height / this.ratio + MARGIN * 2;
       element.style.width = width + 'px';
 
+      var location = {
+        x: -1 * image.offsetLeft + MARGIN,
+        y: -1 * image.offsetTop + MARGIN
+      };
+
       var zoom = cropper.offsetWidth / startWidth;
-      this.zoom(zoom - 1);
+      this.zoom(zoom - 1, location);
     }
   }, {
     key: 'setCrop',
