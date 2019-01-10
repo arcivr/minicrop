@@ -299,7 +299,7 @@
         var _this3 = this;
 
         event.preventDefault();
-        var step = Math.min(Math.abs(event.deltaY), 50);
+        var step = Math.min(Math.abs(event.deltaY), 12);
 
         if (this.minicrop.disabled || step <= .1) {
           return;
@@ -442,10 +442,11 @@
           _this.scale = _this.image.offsetWidth / _this.image.naturalWidth || 1;
 
           _this.ready = true;
-          _this.element.dispatchEvent(new CustomEvent(EVENT_READY));
 
           _this.position();
           _this.resize();
+
+          _this.element.dispatchEvent(new CustomEvent(EVENT_READY));
         });
 
         this.events = new Events(this);
@@ -532,6 +533,8 @@
     }, {
       key: 'zoomToPadded',
       value: function zoomToPadded() {
+        this.center();
+
         var _Constrain$imageState = Constrain.imageState(this),
             minPadRatio = _Constrain$imageState.minPadRatio;
 
@@ -577,6 +580,20 @@
 
         var zoom = cropper.offsetWidth / startWidth;
         this.zoom(zoom - 1, location);
+      }
+    }, {
+      key: 'center',
+      value: function center() {
+        var image = this.image,
+            element = this.element;
+
+        var x = -1 * (image.offsetWidth / 2 - element.offsetWidth / 2);
+        var y = -1 * (image.offsetHeight / 2 - element.offsetHeight / 2);
+
+        this.offset.x = x;
+        this.offset.y = y;
+
+        this.position();
       }
     }, {
       key: 'setCrop',

@@ -1,10 +1,13 @@
 .minicrop {
-  display: block;
   position: relative;
   width: 100%;
   overflow: hidden;
   background: #FFFFFF;
+  cursor: grab;
   transform: translateZ(0);
+}
+.minicrop.moving {
+  cursor: grabbing;
 }
 .minicrop.edit .crop {
   outline-color: rgba(55, 55, 75, 0.2);
@@ -27,6 +30,6 @@
   border: 2px solid #FFFFFF;
   outline: 80px solid rgba(55, 55, 75, 0.7);
   pointer-events: none;
-  z-index: 3;
+  z-index: 2;
   transition: outline-color 750ms ease-in-out 250ms;
 }

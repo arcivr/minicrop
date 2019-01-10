@@ -39,10 +39,11 @@ class Minicrop {
       this.scale = this.image.offsetWidth / this.image.naturalWidth || 1
 
       this.ready = true
-      this.element.dispatchEvent(new CustomEvent(EVENT_READY))
 
       this.position()
       this.resize()
+
+      this.element.dispatchEvent(new CustomEvent(EVENT_READY))
     })
 
     this.events = new Events(this)
@@ -116,8 +117,9 @@ class Minicrop {
   }
 
   zoomToPadded() {
-    let { minPadRatio } = Constrain.imageState(this)
+    this.center()
 
+    let { minPadRatio } = Constrain.imageState(this)
     this.zoomTo(minPadRatio)
   }
 
@@ -154,6 +156,17 @@ class Minicrop {
 
     let zoom = cropper.offsetWidth / startWidth
     this.zoom(zoom - 1, location)
+  }
+
+  center() {
+    let { image, element } = this
+    let x = -1 * (image.offsetWidth / 2 - element.offsetWidth / 2)
+    let y = -1 * (image.offsetHeight / 2 - element.offsetHeight / 2)
+
+    this.offset.x = x
+    this.offset.y = y
+
+    this.position()
   }
 
   setCrop(input) {
