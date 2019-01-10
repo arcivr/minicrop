@@ -187,6 +187,10 @@
           this.cropper.zoomToFitted()
         })
 
+        el.addEventListener('ready', function(e) {
+          this.cropper.zoomToPadded()
+        })
+
         el.addEventListener('crop', function(e) {
           let crop = e.detail
           let largeToSmall = 0.1904761905
