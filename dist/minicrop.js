@@ -16,9 +16,9 @@
   var EVENT_CROP = 'crop';
   var EVENT_ZOOM = 'zoom';
 
-  var EVENT_POINTER_DOWN = 'touchstart mousedown';
-  var EVENT_POINTER_MOVE = 'touchmove mousemove';
-  var EVENT_POINTER_UP = 'touchend touchcancel mouseup mouseout';
+  var EVENT_POINTER_DOWN = 'pointerdown touchstart mousedown';
+  var EVENT_POINTER_MOVE = 'pointermove touchmove mousemove';
+  var EVENT_POINTER_UP = 'pointerup pointercancel touchend touchcancel mouseup mouseout';
   var EVENT_READY = 'ready';
   var EVENT_RESIZE = 'resize';
   var EVENT_WHEEL = 'wheel';
