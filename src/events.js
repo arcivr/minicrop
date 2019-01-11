@@ -56,15 +56,15 @@ class Events {
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
       this.pointerOffset = this.getPointerDistance(pointers)
-
-      return
     }
 
     this.minicrop.editing(CLASS_MOVING)
 
-    let pointer = pointers[0]
-    this.startOffset.x = pointer['clientX'] - offset.x
-    this.startOffset.y = pointer['clientY'] - offset.y
+    let center = this.getPointersCenter(pointers)
+    this.startOffset = {
+      x: center.x - offset.x,
+      y: center.y - offset.y
+    }
   }
 
   dragMove(event) {
@@ -77,8 +77,6 @@ class Events {
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
       this.pinch(pointers)
-
-      return
     }
 
     if (!this.minicrop.moving) {
@@ -86,9 +84,10 @@ class Events {
     }
 
     let { offset } = this.minicrop
-    let pointer = pointers[0]
-    offset.x = pointer['clientX'] - this.startOffset.x
-    offset.y = pointer['clientY'] - this.startOffset.y
+
+    let center = this.getPointersCenter(pointers)
+    offset.x = center.x - this.startOffset.x
+    offset.y = center.y - this.startOffset.y
 
     this.minicrop.position()
   }
@@ -101,18 +100,21 @@ class Events {
 
   // Zooming
 
-  pinch(pointers, scale, center) {
-    scale = scale || this.getPointerDistance(pointers)
-    center = center || this.getPointersCenter(pointers)
+  pinch(pointers) {
+    let center = this.getPointersCenter(pointers, this.minicrop.image)
+    let scale = this.getPointerDistance(pointers)
+    let change = -1 * (scale - this.pointerOffset) * 0.25
 
     let zoomEvent = new CustomEvent("zoom")
-    zoomEvent.deltaY = -1 * (scale - this.pointerOffset)
+    zoomEvent.deltaY = change
+    zoomEvent.offsetX = center.x
+    zoomEvent.offsetY = center.y
 
-    this.zoom(zoomEvent, center)
+    this.zoom(zoomEvent)
     this.pointerOffset = scale
   }
 
-  zoom(event, center) {
+  zoom(event) {
     event.preventDefault()
     let step = Math.min(Math.abs(event.deltaY), 12)
 
@@ -130,12 +132,13 @@ class Events {
       smoothing /= 3
     }
 
-    if (!center) {
-      center = { x: event.offsetX, y: event.offsetY }
-    }
-
     let delta = direction * step / smoothing
+    let center = { x: event.offsetX, y: event.offsetY }
     this.minicrop.zoom(delta, center)
+
+    // Make sure that dragging while zooming stays accurate
+    this.startOffset.x *= (1 + delta)
+    this.startOffset.y *= (1 + delta)
 
     if (this.editingTimeout) {
       clearTimeout(this.editingTimeout)
@@ -149,25 +152,30 @@ class Events {
   // Utilities
 
   getPointerDistance(pointers) {
-    let { clientX: x1, clientY: y1 } = pointers[0]
-    let { clientX: x2, clientY: y2 } = pointers[1]
+    let { clientX: x1, clientY: y1 } = Array.from(pointers).shift()
+    let { clientX: x2, clientY: y2 } = Array.from(pointers).pop()
 
     let distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
     return distance * 2
   }
 
-  getPointersCenter(pointers) {
-    let { image } = this.minicrop
-
+  getPointersCenter(pointers, element) {
     let x = 0
     let y = 0
     let count = 0
 
     Array.from(pointers).forEach(pointer => {
-      let { clientX, clientY } = Constrain.coordinates(pointer, image)
+      let center = {
+        clientX: pointer.clientX,
+        clientY: pointer.clientY
+      }
 
-      x += clientX
-      y += clientY
+      if (element) {
+        center = Constrain.coordinates(pointer, element)
+      }
+
+      x += center.clientX
+      y += center.clientY
       count += 1
     })
 
