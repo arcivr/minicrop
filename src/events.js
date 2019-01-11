@@ -56,8 +56,6 @@ class Events {
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
       this.pointerOffset = this.getPointerDistance(pointers)
-
-      return
     }
 
     this.minicrop.editing(CLASS_MOVING)
@@ -79,8 +77,6 @@ class Events {
     let pointers = (event.targetTouches || event.changedTouches || [event])
     if (pointers.length > 1) {
       this.pinch(pointers)
-
-      return
     }
 
     if (!this.minicrop.moving) {
@@ -105,11 +101,12 @@ class Events {
   // Zooming
 
   pinch(pointers) {
-    let scale = this.getPointerDistance(pointers)
     let center = this.getPointersCenter(pointers, this.minicrop.image)
+    let scale = this.getPointerDistance(pointers)
+    let change = -1 * (scale - this.pointerOffset) * 0.25
 
     let zoomEvent = new CustomEvent("zoom")
-    zoomEvent.deltaY = -1 * (scale - this.pointerOffset) * 1.5
+    zoomEvent.deltaY = change
     zoomEvent.offsetX = center.x
     zoomEvent.offsetY = center.y
 
@@ -138,6 +135,10 @@ class Events {
     let delta = direction * step / smoothing
     let center = { x: event.offsetX, y: event.offsetY }
     this.minicrop.zoom(delta, center)
+
+    // Make sure that dragging while zooming stays accurate
+    this.startOffset.x *= (1 + delta)
+    this.startOffset.y *= (1 + delta)
 
     if (this.editingTimeout) {
       clearTimeout(this.editingTimeout)
