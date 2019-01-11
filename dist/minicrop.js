@@ -233,15 +233,15 @@
         var pointers = event.targetTouches || event.changedTouches || [event];
         if (pointers.length > 1) {
           this.pointerOffset = this.getPointerDistance(pointers);
-
-          return;
         }
 
         this.minicrop.editing(CLASS_MOVING);
 
-        var pointer = pointers[0];
-        this.startOffset.x = pointer['clientX'] - offset.x;
-        this.startOffset.y = pointer['clientY'] - offset.y;
+        var center = this.getPointersCenter(pointers);
+        this.startOffset = {
+          x: center.x - offset.x,
+          y: center.y - offset.y
+        };
       }
     }, {
       key: 'dragMove',
@@ -255,8 +255,6 @@
         var pointers = event.targetTouches || event.changedTouches || [event];
         if (pointers.length > 1) {
           this.pinch(pointers);
-
-          return;
         }
 
         if (!this.minicrop.moving) {
@@ -265,9 +263,10 @@
 
         var offset = this.minicrop.offset;
 
-        var pointer = pointers[0];
-        offset.x = pointer['clientX'] - this.startOffset.x;
-        offset.y = pointer['clientY'] - this.startOffset.y;
+
+        var center = this.getPointersCenter(pointers);
+        offset.x = center.x - this.startOffset.x;
+        offset.y = center.y - this.startOffset.y;
 
         this.minicrop.position();
       }
@@ -283,19 +282,22 @@
 
     }, {
       key: 'pinch',
-      value: function pinch(pointers, scale, center) {
-        scale = scale || this.getPointerDistance(pointers);
-        center = center || this.getPointersCenter(pointers);
+      value: function pinch(pointers) {
+        var center = this.getPointersCenter(pointers, this.minicrop.image);
+        var scale = this.getPointerDistance(pointers);
+        var change = -1 * (scale - this.pointerOffset) * 0.25;
 
         var zoomEvent = new CustomEvent("zoom");
-        zoomEvent.deltaY = -1 * (scale - this.pointerOffset);
+        zoomEvent.deltaY = change;
+        zoomEvent.offsetX = center.x;
+        zoomEvent.offsetY = center.y;
 
-        this.zoom(zoomEvent, center);
+        this.zoom(zoomEvent);
         this.pointerOffset = scale;
       }
     }, {
       key: 'zoom',
-      value: function zoom(event, center) {
+      value: function zoom(event) {
         var _this3 = this;
 
         event.preventDefault();
@@ -315,12 +317,13 @@
           smoothing /= 3;
         }
 
-        if (!center) {
-          center = { x: event.offsetX, y: event.offsetY };
-        }
-
         var delta = direction * step / smoothing;
+        var center = { x: event.offsetX, y: event.offsetY };
         this.minicrop.zoom(delta, center);
+
+        // Make sure that dragging while zooming stays accurate
+        this.startOffset.x *= 1 + delta;
+        this.startOffset.y *= 1 + delta;
 
         if (this.editingTimeout) {
           clearTimeout(this.editingTimeout);
@@ -336,34 +339,36 @@
     }, {
       key: 'getPointerDistance',
       value: function getPointerDistance(pointers) {
-        var _pointers$ = pointers[0],
-            x1 = _pointers$.clientX,
-            y1 = _pointers$.clientY;
-        var _pointers$2 = pointers[1],
-            x2 = _pointers$2.clientX,
-            y2 = _pointers$2.clientY;
+        var _Array$from$shift = Array.from(pointers).shift(),
+            x1 = _Array$from$shift.clientX,
+            y1 = _Array$from$shift.clientY;
 
+        var _Array$from$pop = Array.from(pointers).pop(),
+            x2 = _Array$from$pop.clientX,
+            y2 = _Array$from$pop.clientY;
 
         var distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
         return distance * 2;
       }
     }, {
       key: 'getPointersCenter',
-      value: function getPointersCenter(pointers) {
-        var image = this.minicrop.image;
-
-
+      value: function getPointersCenter(pointers, element) {
         var x = 0;
         var y = 0;
         var count = 0;
 
         Array.from(pointers).forEach(function (pointer) {
-          var _Constrain$coordinate = Constrain.coordinates(pointer, image),
-              clientX = _Constrain$coordinate.clientX,
-              clientY = _Constrain$coordinate.clientY;
+          var center = {
+            clientX: pointer.clientX,
+            clientY: pointer.clientY
+          };
 
-          x += clientX;
-          y += clientY;
+          if (element) {
+            center = Constrain.coordinates(pointer, element);
+          }
+
+          x += center.clientX;
+          y += center.clientY;
           count += 1;
         });
 

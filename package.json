@@ -1,6 +1,6 @@
 {
   "name": "minicrop",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "dist/minicrop.js",
   "module": "dist/minicrop.esm.js",
   "author": "Derek Lucas <d@derekplucas.com>",
