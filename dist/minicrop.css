@@ -6,12 +6,12 @@
   cursor: grab;
   transform: translateZ(0);
 }
-.minicrop.moving {
-  cursor: grabbing;
-}
 .minicrop.edit .crop {
   outline-color: rgba(55, 55, 75, 0.2);
   transition: outline-color 100ms ease-in;
+}
+.minicrop.moving {
+  cursor: grabbing;
 }
 .minicrop .image {
   position: absolute;
@@ -33,3 +33,5 @@
   z-index: 2;
   transition: outline-color 750ms ease-in-out 250ms;
 }
+
+/*# sourceMappingURL=minicrop.css.map */

@@ -8,15 +8,17 @@
   "scripts": {
     "test": "jest",
     "dev": "node browsersync.js",
-    "build": "rollup -c"
+    "build": "rollup -c && sass src:dist && postcss dist/*.css -d dist/"
   },
   "dependencies": {},
   "devDependencies": {
+    "autoprefixer": "^9.4.5",
     "babel-core": "6",
     "babel-jest": "^23.6.0",
     "babel-preset-env": "^1.7.0",
     "browser-sync": "^2.26.3",
     "jest": "^23.6.0",
+    "postcss-cli": "^6.1.1",
     "rollup": "^1.1.0",
     "rollup-plugin-babel": "3",
     "sass": "^1.16.0"

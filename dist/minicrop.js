@@ -1,8 +1,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.minicrop = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, global.minicrop = factory());
+}(this, function () { 'use strict';
 
   var MARGIN = 40;
   var ZOOM_MAXIMUM = 5;
@@ -647,4 +647,4 @@
 
   return Minicrop;
 
-})));
+}));
