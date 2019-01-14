@@ -19,6 +19,6 @@
     "jest": "^23.6.0",
     "rollup": "^0.67.4",
     "rollup-plugin-babel": "3",
-    "sass": "^1.15.2"
+    "sass": "^1.16.0"
   }
 }
