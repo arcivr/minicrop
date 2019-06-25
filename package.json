@@ -21,6 +21,6 @@
     "postcss-cli": "^6.1.2",
     "rollup": "^1.4.0",
     "rollup-plugin-babel": "3",
-    "sass": "^1.17.3"
+    "sass": "^1.22.0"
   }
 }
