@@ -195,14 +195,19 @@ class Minicrop {
   crop() {
     const { image, cropper } = this
 
-    let ratio = (image.naturalWidth / image.offsetWidth) || 1
+    const ratio = (image.naturalWidth / image.offsetWidth) || 1
+    const left = (image.offsetLeft - MARGIN) * ratio
+    const top = (image.offsetTop - MARGIN) * ratio
 
     return {
-      x: (image.offsetLeft - MARGIN) * ratio,
-      y: (image.offsetTop - MARGIN) * ratio,
+      x: left,
+      y: top,
       width: cropper.offsetWidth * ratio,
       height: cropper.offsetHeight * ratio,
-      scale: this.scale
+      scale: this.scale,
+      left,
+      top,
+      right: ((image.offsetWidth - cropper.offsetWidth) * ratio) - left
     }
   }
 }
