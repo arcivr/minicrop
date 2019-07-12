@@ -3,7 +3,10 @@
 exports[`Minicrop crop response 1`] = `
 Object {
   "height": 0,
+  "left": -40,
+  "right": 40,
   "scale": 1,
+  "top": -40,
   "width": 0,
   "x": -40,
   "y": -40,

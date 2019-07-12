@@ -1,3 +1,4 @@
+import Constrain from './constrain.js'
 import {
   EVENT_POINTER_DOWN,
   EVENT_POINTER_MOVE,
@@ -7,8 +8,6 @@ import {
   CLASS_ZOOMING,
   CLASS_MOVING
 } from './constants.js'
-
-import Constrain from './constrain.js'
 
 class Events {
   constructor(minicrop) {
@@ -25,7 +24,8 @@ class Events {
 
     window.addEventListener(EVENT_RESIZE, this)
 
-    Array(EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP).join(" ").split(" ")
+    Array(EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP)
+      .reduce((a, b) => a.concat(b), []) // Flatten
       .forEach(type => {
         element.addEventListener(type, this)
       })
@@ -36,11 +36,35 @@ class Events {
 
     window.removeEventListener(EVENT_RESIZE, this)
 
-    Array(EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP).join(" ").split(" ")
+    Array(EVENT_WHEEL, EVENT_POINTER_DOWN, EVENT_POINTER_MOVE, EVENT_POINTER_UP)
+      .reduce((a, b) => a.concat(b), []) // Flatten
       .forEach(type => {
         element.removeEventListener(type, this)
       })
   }
+
+  handleEvent(event) {
+    if (EVENT_RESIZE.includes(event.type)) {
+      this.minicrop.resize(event)
+    }
+
+    if (EVENT_WHEEL.includes(event.type)) {
+      this.zoom(event)
+    }
+
+    if (EVENT_POINTER_DOWN.includes(event.type)) {
+      this.dragStart(event)
+    }
+
+    if (EVENT_POINTER_MOVE.includes(event.type)) {
+      this.dragMove(event)
+    }
+
+    if (EVENT_POINTER_UP.includes(event.type)) {
+      this.dragEnd(event)
+    }
+  }
+
 
   // Dragging
 
@@ -185,28 +209,6 @@ class Events {
     return {
       x,
       y
-    }
-  }
-
-  handleEvent(event) {
-    if (EVENT_RESIZE.includes(event.type)) {
-      this.minicrop.resize(event)
-    }
-
-    if (EVENT_WHEEL.includes(event.type)) {
-      this.zoom(event)
-    }
-
-    if (EVENT_POINTER_DOWN.includes(event.type)) {
-      this.dragStart(event)
-    }
-
-    if (EVENT_POINTER_MOVE.includes(event.type)) {
-      this.dragMove(event)
-    }
-
-    if (EVENT_POINTER_UP.includes(event.type)) {
-      this.dragEnd(event)
     }
   }
 }
