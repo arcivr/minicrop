@@ -4619,10 +4619,10 @@ sane@^2.0.0:
   optionalDependencies:
     fsevents "^1.2.3"
 
-sass@^1.22.4:
-  version "1.22.4"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.22.4.tgz#00b433055f00a25ed5f060ca4abc332facaf02fc"
-  integrity sha512-gQFNzYKlAn9ee6Qy1UhTxy0G24QR5BWP61AN61jAEqwauzVCP5qjUveO/WkIj72po0ljncdVXo96EQR+ig2lRw==
+sass@^1.26.1:
+  version "1.26.1"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.26.1.tgz#79a36c957530c1dfffa2958968b90cb736794e91"
+  integrity sha512-DWtzW0jDu+96MYkEdM8vUigjpisvM9qSlDwNvTFcr+XC7o2+3aXSAbHNcJ+8HzD1857uW9Opbxgu39esytVUKA==
   dependencies:
     chokidar ">=2.0.0 <4.0.0"
 
